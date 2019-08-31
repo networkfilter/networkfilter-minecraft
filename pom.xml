@@ -4,7 +4,7 @@
 
     <groupId>io.nilsdev.bungee</groupId>
     <artifactId>networkfilter</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
 
     <name>NetworkFilter</name>
     <description>NetworkFilter Plugin</description>
@@ -21,7 +21,7 @@
         <url>https://git.ni.ls/networkfilter/networkfilter-bungee</url>
         <connection>scm:git:git@git.ni.ls:networkfilter/networkfilter-bungee.git</connection>
         <developerConnection>scm:git:git@git.ni.ls:networkfilter/networkfilter-bungee.git</developerConnection>
-        <tag>v1.0.0</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <repositories>
