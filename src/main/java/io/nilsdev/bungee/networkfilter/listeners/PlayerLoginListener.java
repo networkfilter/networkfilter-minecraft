@@ -1,0 +1,122 @@
+package io.nilsdev.bungee.networkfilter.listeners;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.imaginarycode.minecraft.redisbungee.RedisBungee;
+import io.nilsdev.bungee.networkfilter.NetworkFilter;
+import io.nilsdev.bungee.networkfilter.json.ApiResponse;
+import kong.unirest.HttpResponse;
+import kong.unirest.JsonNode;
+import kong.unirest.Unirest;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.event.PostLoginEvent;
+import net.md_5.bungee.api.event.PreLoginEvent;
+import net.md_5.bungee.api.plugin.Listener;
+import net.md_5.bungee.event.EventHandler;
+import org.json.JSONObject;
+
+import java.net.InetAddress;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
+public class PlayerLoginListener implements Listener {
+
+    private final NetworkFilter plugin;
+    private final Gson gson = new Gson();
+
+    Cache<String, ApiResponse> cache = CacheBuilder.newBuilder()
+            .maximumSize(1000)
+            .expireAfterWrite(15, TimeUnit.MINUTES)
+            .build();
+
+    public PlayerLoginListener(NetworkFilter plugin) {
+        this.plugin = plugin;
+    }
+
+    @EventHandler
+    public void onJoin(PreLoginEvent event) {
+        int connected = 0;
+
+        for (UUID uuid : RedisBungee.getApi().getPlayersOnline()) {
+            InetAddress playerIp = RedisBungee.getApi().getPlayerIp(uuid);
+
+            if (event.getConnection().getAddress().getAddress().toString().equalsIgnoreCase(playerIp.toString()))
+                connected++;
+        }
+
+        if (connected >= 3) {
+            event.setCancelled(true);
+            event.setCancelReason(TextComponent.fromLegacyText("§3§lNetworkFilter §8§l» §7Fehler beim Verbinden. Über deine IP sind bereits 3 Accounts online!"));
+        }
+    }
+
+    @EventHandler
+    public void onEvent(PostLoginEvent event) {
+        long eventStart = System.currentTimeMillis();
+
+        this.plugin.getProxy().getScheduler().runAsync(this.plugin, () -> {
+            long start = System.currentTimeMillis();
+
+            String address = event.getPlayer().getAddress().getAddress().getHostAddress();
+
+            if (event.getPlayer().hasPermission("nabapi.allowvpn") || event.getPlayer().hasPermission("networkfilter.ignore")) {
+                this.plugin.getLogger().info("[" + event.getPlayer().getName() + "|" + address + "] Querying " + address + " skip because authorized");
+                return;
+            }
+
+            JsonObject requestBody = new JsonObject();
+            requestBody.addProperty("ip", address);
+            requestBody.addProperty("apiKey", this.plugin.config.getString("apiKey"));
+
+            ApiResponse cachedApiResponse = cache.getIfPresent(address);
+
+            if (cachedApiResponse != null) {
+
+                if (cachedApiResponse.isBlocked()) {
+                    event.getPlayer().disconnect(TextComponent.fromLegacyText("§3§lNetworkFilter §8§l» §7Fehler beim Verbinden. Melde dich im Forum oder Support mit der Id §e" + cachedApiResponse.getAsn() + " (" + cachedApiResponse.getOrg() + ")"));
+                }
+
+                long elapsedTime = System.currentTimeMillis() - start;
+                this.plugin.getLogger().info("[" + event.getPlayer().getName() + "|" + address + "] Querying " + address + " took " + elapsedTime + "ms returns CACHED -> " + cachedApiResponse.toString());
+
+            } else {
+
+                HttpResponse<JsonNode> response = Unirest.post("https://nf.ni.ls/api/check")
+                        .header("Content-Type", "application/json")
+                        .body(this.gson.toJson(requestBody))
+                        .asJson();
+
+                if (!response.isSuccess()) {
+                    long elapsedTime = System.currentTimeMillis() - start;
+                    this.plugin.getLogger().warning("[" + event.getPlayer().getName() + "|" + address + "] Querying " + address + " took " + elapsedTime + "ms returns http success false -> " + this.gson.toJson(response.getBody()));
+                    return;
+                }
+
+                JSONObject body = response.getBody().getObject();
+
+                if (!body.optBoolean("success", false)) {
+                    long elapsedTime = System.currentTimeMillis() - start;
+                    this.plugin.getLogger().warning("[" + event.getPlayer().getName() + "|" + address + "] Querying " + address + " took " + elapsedTime + "ms returns json success false -> " + this.gson.toJson(body));
+                    return;
+                }
+
+                JSONObject data = body.getJSONObject("data");
+
+                ApiResponse apiResponse = gson.fromJson(data.toString(), ApiResponse.class);
+
+                this.cache.put(address, apiResponse);
+
+                if (apiResponse.isBlocked()) {
+                    event.getPlayer().disconnect(TextComponent.fromLegacyText("§3§lNetworkFilter §8§l» §7Fehler beim Verbinden. Melde dich im Forum oder Support mit der Id §e" + apiResponse.getAsn() + " (" + apiResponse.getOrg() + ")"));
+                }
+
+                long elapsedTime = System.currentTimeMillis() - start;
+                this.plugin.getLogger().info("[" + event.getPlayer().getName() + "|" + address + "] Querying " + address + " took " + elapsedTime + "ms returns LIVE -> " + apiResponse.toString());
+            }
+        });
+        long eventElapsedTime = System.currentTimeMillis() - eventStart;
+        this.plugin.getLogger().warning("[" + event.getPlayer().getName() + "] took " + eventElapsedTime + "ms");
+    }
+}

@@ -1,0 +1,11 @@
+name: ${project.name}
+version: ${project.version}
+description: ${project.description}
+
+depend:
+  - RedisBungee
+
+author: nils
+website: https://ni.ls/
+
+main: ${project.groupId}.${project.artifactId}.${project.name}
