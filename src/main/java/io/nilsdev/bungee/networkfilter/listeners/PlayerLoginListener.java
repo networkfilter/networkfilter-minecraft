@@ -28,18 +28,17 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.imaginarycode.minecraft.redisbungee.RedisBungee;
 import io.nilsdev.bungee.networkfilter.NetworkFilter;
 import io.nilsdev.bungee.networkfilter.json.ApiResponse;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
 import kong.unirest.Unirest;
+import kong.unirest.json.JSONObject;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
-import org.json.JSONObject;
 
 import java.net.InetAddress;
 import java.util.UUID;
@@ -58,23 +57,6 @@ public class PlayerLoginListener implements Listener {
 
     public PlayerLoginListener(NetworkFilter plugin) {
         this.plugin = plugin;
-    }
-
-    @EventHandler
-    public void onJoin(PreLoginEvent event) {
-        int connected = 0;
-
-        for (UUID uuid : RedisBungee.getApi().getPlayersOnline()) {
-            InetAddress playerIp = RedisBungee.getApi().getPlayerIp(uuid);
-
-            if (event.getConnection().getAddress().getAddress().toString().equalsIgnoreCase(playerIp.toString()))
-                connected++;
-        }
-
-        if (connected >= 3) {
-            event.setCancelled(true);
-            event.setCancelReason(TextComponent.fromLegacyText("§3§lNetworkFilter §8§l» §7Fehler beim Verbinden. Über deine IP sind bereits 3 Accounts online!"));
-        }
     }
 
     @EventHandler
