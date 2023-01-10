@@ -44,14 +44,14 @@ public class NetworkFilter extends Plugin {
         saveDefaultConfig();
         loadConfig();
 
-        this.getProxy().getPluginManager().registerListener(this, new PlayerLoginListener(this));
+        getProxy().getPluginManager().registerListener(this, new PlayerLoginListener(this));
     }
 
     private void loadConfig() {
         try {
             config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(new File(getDataFolder(), "config.yml"));
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException exception) {
+            throw new RuntimeException("Could not load config.yml", exception);
         }
     }
 
@@ -65,9 +65,10 @@ public class NetworkFilter extends Plugin {
         if (!file.exists()) {
             try (InputStream in = getResourceAsStream("config.yml")) {
                 Files.copy(in, file.toPath());
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (IOException exception) {
+                throw new RuntimeException("Could not save config.yml", exception);
             }
         }
     }
+
 }

@@ -28,11 +28,17 @@ package io.nilsdev.bungee.networkfilter.json;
 public class ApiResponse {
 
     private String ip;
+
     private String asn;
+
     private String org;
+
     private boolean blocked;
+
     private String blockedType;
+
     private boolean cached;
+
     private int took;
 
     public String getIp() {
@@ -103,4 +109,5 @@ public class ApiResponse {
                 ", took=" + took +
                 '}';
     }
+
 }
