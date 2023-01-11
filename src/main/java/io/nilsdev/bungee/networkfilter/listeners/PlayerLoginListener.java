@@ -27,7 +27,6 @@ package io.nilsdev.bungee.networkfilter.listeners;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.imaginarycode.minecraft.redisbungee.RedisBungee;
 import io.nilsdev.bungee.networkfilter.NetworkFilter;
 import io.nilsdev.bungee.networkfilter.json.ApiResponse;
@@ -81,21 +80,19 @@ public class PlayerLoginListener implements Listener {
                 return;
             }
 
-            JsonObject requestBody = new JsonObject();
-            requestBody.addProperty("ip", address);
-            requestBody.addProperty("apiKey", networkFilter.config.getString("apiKey"));
+            JSONObject requestBody = new JSONObject()
+                    .put("ip", address)
+                    .put("apiKey", networkFilter.config.getString("apiKey"));
 
             ApiResponse cachedApiResponse = CACHE.getIfPresent(address);
 
             if (cachedApiResponse != null) {
-
                 if (cachedApiResponse.isBlocked()) {
                     event.getPlayer().disconnect(TextComponent.fromLegacyText("§3§lNetworkFilter §8§l» §7Fehler beim Verbinden. Melde dich im Forum oder Support mit der Id §e" + cachedApiResponse.getAsn() + " (" + cachedApiResponse.getOrg() + ")"));
                 }
 
                 long elapsedTime = System.currentTimeMillis() - start;
                 networkFilter.getLogger().info("[" + event.getPlayer().getName() + "|" + address + "] Querying " + address + " took " + elapsedTime + "ms returns CACHED -> " + cachedApiResponse);
-
             } else {
 
                 HttpResponse<JsonNode> response = Unirest.post("https://nf.ni.ls/api/check")

@@ -51,7 +51,7 @@ public class NetworkFilter extends Plugin {
         try {
             config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(new File(getDataFolder(), "config.yml"));
         } catch (IOException exception) {
-            throw new RuntimeException("Could not load config.yml", exception);
+            exception.printStackTrace();
         }
     }
 
@@ -66,7 +66,7 @@ public class NetworkFilter extends Plugin {
             try (InputStream in = getResourceAsStream("config.yml")) {
                 Files.copy(in, file.toPath());
             } catch (IOException exception) {
-                throw new RuntimeException("Could not save config.yml", exception);
+                exception.printStackTrace();
             }
         }
     }
