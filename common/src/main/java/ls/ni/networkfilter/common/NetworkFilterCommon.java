@@ -2,13 +2,14 @@ package ls.ni.networkfilter.common;
 
 import ls.ni.networkfilter.common.cache.Cache;
 import ls.ni.networkfilter.common.cache.CacheFactory;
-import ls.ni.networkfilter.common.cache.NoopCache;
 import ls.ni.networkfilter.common.config.Config;
 import ls.ni.networkfilter.common.filter.*;
+import org.checkerframework.checker.units.qual.N;
 import org.jetbrains.annotations.NotNull;
 
+import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,13 +17,15 @@ import java.util.logging.Logger;
 public class NetworkFilterCommon {
 
     private final @NotNull Logger logger;
+    private final @NotNull Config config;
     private final @NotNull Cache<String, FilterResult> filterCache;
     private final @NotNull FilterService filterService;
 
     private static NetworkFilterCommon instance;
 
-    public NetworkFilterCommon(@NotNull Logger logger, @NotNull Cache<String, FilterResult> filterCache, @NotNull FilterService filterService) {
+    public NetworkFilterCommon(@NotNull Logger logger, @NotNull Config config, @NotNull Cache<String, FilterResult> filterCache, @NotNull FilterService filterService) {
         this.logger = logger;
+        this.config = config;
         this.filterCache = filterCache;
         this.filterService = filterService;
     }
@@ -48,6 +51,7 @@ public class NetworkFilterCommon {
 
         instance = new NetworkFilterCommon(
                 logger,
+                config,
                 cache,
                 service
         );
@@ -63,6 +67,23 @@ public class NetworkFilterCommon {
 
     public NetworkFilterResult check(@NotNull String ip) {
         long startTime = System.nanoTime();
+
+        try {
+            InetAddress inetAddress = Inet4Address.getByName(ip);
+
+            // TODO: temp, should be transformed to ignore array in config
+            if (inetAddress.isLoopbackAddress() || inetAddress.isAnyLocalAddress() || inetAddress.isLinkLocalAddress() || inetAddress.isSiteLocalAddress()) {
+                return new NetworkFilterResult(
+                        false,
+                        -1,
+                        "Internal Network",
+                        false,
+                        TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime)
+                );
+            }
+        } catch (Throwable t) {
+            this.logger.log(Level.SEVERE, "Error while checking inetAddress for local and bogon", t);
+        }
 
         Optional<FilterResult> cached = Optional.ofNullable(this.filterCache.getIfPresent(ip));
 
