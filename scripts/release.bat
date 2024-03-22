@@ -1,1 +1,0 @@
-mvn release:clean release:prepare -DignoreSnapshots=true

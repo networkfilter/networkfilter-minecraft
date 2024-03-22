@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>ls.ni.networkfilter</groupId>
+        <artifactId>networkfilter</artifactId>
+        <version>0</version>
+    </parent>
+
+    <artifactId>networkfilter-bungee</artifactId>
+
+    <name>NetworkFilterBungee</name>
+    <description/>
+
+    <repositories>
+        <repository>
+            <id>bungeecord-repo</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>net.md-5</groupId>
+            <artifactId>bungeecord-api</artifactId>
+            <version>1.19-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>ls.ni.networkfilter</groupId>
+            <artifactId>networkfilter-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>${project.name}-${project.version}</finalName>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.5.2</version>
+                <configuration>
+                    <relocations>
+                        <relocation>
+                            <pattern>com.github.benmanes.caffeine.cache</pattern>
+                            <shadedPattern>${project.parent.groupId}.libs.com.github.benmanes.caffeine.cache</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.google.errorprone.annotations</pattern>
+                            <shadedPattern>${project.parent.groupId}.libs.com.google.errorprone.annotations</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.google.gson</pattern>
+                            <shadedPattern>${project.parent.groupId}.libs.com.google.gson</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>kong.unirest.core</pattern>
+                            <shadedPattern>${project.parent.groupId}.libs.kong.unirest.core</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>kong.unirest.modules.gson</pattern>
+                            <shadedPattern>${project.parent.groupId}.libs.kong.unirest.modules.gson</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.checkerframework.checker</pattern>
+                            <shadedPattern>${project.parent.groupId}.libs.org.checkerframework.checker</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.checkerframework.common</pattern>
+                            <shadedPattern>${project.parent.groupId}.libs.org.checkerframework.common</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.checkerframework.dataflow.qual</pattern>
+                            <shadedPattern>${project.parent.groupId}.libs.org.checkerframework.dataflow.qual</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.checkerframework.framework.qual</pattern>
+                            <shadedPattern>${project.parent.groupId}.libs.org.checkerframework.framework.qual</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.intellij.lang.annotations</pattern>
+                            <shadedPattern>${project.parent.groupId}.libs.org.intellij.lang.annotations</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.jetbrains.annotations</pattern>
+                            <shadedPattern>${project.parent.groupId}.libs.org.jetbrains.annotations</shadedPattern>
+                        </relocation>
+                    </relocations>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

@@ -1,0 +1,12 @@
+{
+  "id": "networkfiltervelocity",
+  "name": "${project.name}",
+  "version": "${project.version}#${git.commit.id.describe}",
+  "description": "${project.description}",
+  "dependencies": [],
+  "authors": [
+    "nidotls"
+  ],
+  "url": "https://github.com/nidotls/${project.parent.name}",
+  "main": "ls.ni.networkfilter.velocity.NetworkFilterVelocityPlugin"
+}

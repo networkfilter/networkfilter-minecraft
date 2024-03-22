@@ -1,0 +1,32 @@
+cache: "disabled"
+service: "networkfilter"
+
+caches:
+  # No cache
+  disabled: { }
+
+  # Local cache
+  local:
+    maximumSize: 1000
+    cacheTimeMinutes: 15
+
+services:
+  # https://nf.ni.ls
+  networkfilter:
+    # Required
+    key: ""
+
+  # https://ipapi.is
+  ipapiis:
+    # Optional, needed if rate-limited
+    key: ""
+
+    # Check https://ipapi.is/developers.html#top-level-api-output
+    blockBogon: false
+    blockMobile: false
+    blockCrawler: false
+    blockDatacenter: true
+    blockTor: true
+    blockProxy: true
+    blockVPN: true
+    blockAbuser: true
