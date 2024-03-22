@@ -21,6 +21,10 @@ public class PostLoginListener {
         Player player = event.getPlayer();
         String address = player.getRemoteAddress().getAddress().getHostAddress();
 
+        if (player.hasPermission("networkfilter.ignore")) {
+            return;
+        }
+
         this.plugin.getServer().getScheduler().buildTask(this.plugin, () -> {
             NetworkFilterResult result = NetworkFilterCommon.getInstance().check(address);
 

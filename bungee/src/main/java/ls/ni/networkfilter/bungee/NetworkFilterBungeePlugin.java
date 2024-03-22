@@ -24,115 +24,18 @@
 
 package ls.ni.networkfilter.bungee;
 
-import lombok.Getter;
 import ls.ni.networkfilter.bungee.listeners.PostLoginListener;
 import ls.ni.networkfilter.common.NetworkFilterCommon;
-import ls.ni.networkfilter.common.config.Config;
 import net.md_5.bungee.api.plugin.Plugin;
-import net.md_5.bungee.config.Configuration;
-import net.md_5.bungee.config.ConfigurationProvider;
-import net.md_5.bungee.config.YamlConfiguration;
-import org.jetbrains.annotations.NotNull;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 public class NetworkFilterBungeePlugin extends Plugin {
 
-    @Getter
-    private Configuration config;
-
     @Override
     public void onEnable() {
-        this.saveDefaultConfig();
-        this.reloadConfig();
-
-        // ---
-
-        NetworkFilterCommon.init(this.getLogger(), this.toConfig(getConfig()));
+        NetworkFilterCommon.init(this.getLogger(), this.getDataFolder());
 
         // ---
 
         this.getProxy().getPluginManager().registerListener(this, new PostLoginListener(this));
-    }
-
-    private @NotNull Config toConfig(Configuration config) {
-        String cache = config.getString("cache");
-        String service = config.getString("service");
-        Map<String, Map<String, Object>> caches = new HashMap<>();
-        Map<String, Map<String, Object>> services = new HashMap<>();
-
-        Configuration cacheConfigurationSection = config.getSection("caches");
-        if (cacheConfigurationSection != null) {
-            Collection<String> cacheTypes = cacheConfigurationSection.getKeys();
-
-            for (String cacheType : cacheTypes) {
-                Collection<String> cacheSettingKeys = cacheConfigurationSection.getSection(cacheType).getKeys();
-
-                Map<String, Object> settings = new HashMap<>();
-                for (String cacheSettingKey : cacheSettingKeys) {
-                    settings.put(cacheSettingKey, cacheConfigurationSection.getSection(cacheType).get(cacheSettingKey));
-                }
-                caches.put(cacheType, settings);
-            }
-        }
-
-        Configuration serviceConfigurationSection = config.getSection("services");
-        if (serviceConfigurationSection != null) {
-            Collection<String> serviceKeys = serviceConfigurationSection.getKeys();
-
-            for (String serviceType : serviceKeys) {
-                Collection<String> serviceSettingKeys = serviceConfigurationSection.getSection(serviceType).getKeys();
-
-                Map<String, Object> settings = new HashMap<>();
-                for (String serviceSettingKey : serviceSettingKeys) {
-                    settings.put(serviceSettingKey, serviceConfigurationSection.getSection(serviceType).get(serviceSettingKey));
-                }
-                services.put(serviceType, settings);
-            }
-        }
-
-        return new Config(
-                cache,
-                service,
-                caches,
-                services
-        );
-    }
-
-    private void reloadConfig() {
-        try {
-            this.config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(new File(this.getDataFolder(), "config.yml"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void saveConfig() {
-        try {
-            ConfigurationProvider.getProvider(YamlConfiguration.class).save(this.config, new File(this.getDataFolder(), "config.yml"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void saveDefaultConfig() {
-        if (!this.getDataFolder().exists())
-            this.getDataFolder().mkdir();
-
-        File file = new File(this.getDataFolder(), "config.yml");
-
-        if (!file.exists()) {
-            try (InputStream in = this.getResourceAsStream("config.yml")) {
-                Files.copy(in, file.toPath());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
     }
 }

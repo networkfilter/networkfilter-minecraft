@@ -1,9 +1,13 @@
-package ls.ni.networkfilter.common.filter;
+package ls.ni.networkfilter.common.filter.types;
 
+import jakarta.validation.constraints.NotBlank;
 import kong.unirest.core.HttpResponse;
 import kong.unirest.core.JsonNode;
 import kong.unirest.core.Unirest;
 import kong.unirest.core.json.JSONObject;
+import ls.ni.networkfilter.common.filter.FilterException;
+import ls.ni.networkfilter.common.filter.FilterResult;
+import ls.ni.networkfilter.common.filter.FilterService;
 import org.jetbrains.annotations.NotNull;
 
 public class NetworkFilterFilterService implements FilterService {
@@ -11,7 +15,7 @@ public class NetworkFilterFilterService implements FilterService {
     @NotNull
     private final String apiKey;
 
-    public NetworkFilterFilterService(@NotNull String apiKey) {
+    public NetworkFilterFilterService(@NotNull @NotBlank String apiKey) {
         this.apiKey = apiKey;
     }
 

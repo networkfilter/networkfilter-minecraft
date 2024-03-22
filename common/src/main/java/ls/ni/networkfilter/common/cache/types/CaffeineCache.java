@@ -1,6 +1,7 @@
-package ls.ni.networkfilter.common.cache;
+package ls.ni.networkfilter.common.cache.types;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
+import ls.ni.networkfilter.common.cache.Cache;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jetbrains.annotations.NotNull;
 
@@ -11,7 +12,7 @@ public class CaffeineCache<K, V> implements Cache<K, V> {
 
     private final com.github.benmanes.caffeine.cache.Cache<K, V> cache;
 
-    public CaffeineCache(long maximumSize, Duration expireAfterWrite) {
+    public CaffeineCache(@NotNull Long maximumSize, @NotNull Duration expireAfterWrite) {
         this.cache = Caffeine.newBuilder()
                 .maximumSize(maximumSize)
                 .expireAfterWrite(expireAfterWrite)

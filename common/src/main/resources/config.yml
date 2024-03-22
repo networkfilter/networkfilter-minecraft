@@ -22,11 +22,12 @@ services:
     key: ""
 
     # Check https://ipapi.is/developers.html#top-level-api-output
-    blockBogon: false
-    blockMobile: false
-    blockCrawler: false
-    blockDatacenter: true
-    blockTor: true
-    blockProxy: true
-    blockVPN: true
-    blockAbuser: true
+    block:
+      bogon: false
+      mobile: false
+      crawler: false
+      datacenter: true
+      tor: true
+      proxy: true
+      vpn: true
+      abuser: true

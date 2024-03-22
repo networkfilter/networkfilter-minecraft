@@ -3,10 +3,11 @@ package ls.ni.networkfilter.common;
 import ls.ni.networkfilter.common.cache.Cache;
 import ls.ni.networkfilter.common.cache.CacheFactory;
 import ls.ni.networkfilter.common.config.Config;
+import ls.ni.networkfilter.common.config.ConfigManager;
 import ls.ni.networkfilter.common.filter.*;
-import org.checkerframework.checker.units.qual.N;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.util.Optional;
@@ -17,31 +18,29 @@ import java.util.logging.Logger;
 public class NetworkFilterCommon {
 
     private final @NotNull Logger logger;
-    private final @NotNull Config config;
+    private final @NotNull ConfigManager configManager;
     private final @NotNull Cache<String, FilterResult> filterCache;
     private final @NotNull FilterService filterService;
 
     private static NetworkFilterCommon instance;
 
-    public NetworkFilterCommon(@NotNull Logger logger, @NotNull Config config, @NotNull Cache<String, FilterResult> filterCache, @NotNull FilterService filterService) {
+    public NetworkFilterCommon(@NotNull Logger logger, @NotNull ConfigManager configManager, @NotNull Cache<String, FilterResult> filterCache, @NotNull FilterService filterService) {
         this.logger = logger;
-        this.config = config;
+        this.configManager = configManager;
         this.filterCache = filterCache;
         this.filterService = filterService;
     }
 
-    public static void init(@NotNull Logger logger, @NotNull Config config) {
+    public static void init(@NotNull Logger logger, @NotNull File dataFolder) {
         if (instance != null) {
             throw new IllegalStateException("init() call but already initialized");
         }
 
-        if (config.cache() == null || config.cache().isBlank() || !config.caches().containsKey(config.cache())) {
-            throw new IllegalStateException("Config value 'cache' not set, empty or does not exists in 'caches'");
-        }
+        ConfigManager configManager = new ConfigManager(dataFolder);
+        configManager.saveDefaultConfig();
+        configManager.reloadConfig();
 
-        if (config.service() == null || config.service().isBlank() || !config.services().containsKey(config.service())) {
-            throw new IllegalStateException("Config value 'service' not set, empty or does not exists in 'services'");
-        }
+        Config config = configManager.getConfig();
 
         Cache cache = CacheFactory.create(config);
         FilterService service = FilterServiceFactory.create(config);
@@ -51,7 +50,7 @@ public class NetworkFilterCommon {
 
         instance = new NetworkFilterCommon(
                 logger,
-                config,
+                configManager,
                 cache,
                 service
         );

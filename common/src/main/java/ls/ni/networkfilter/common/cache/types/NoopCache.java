@@ -1,5 +1,6 @@
-package ls.ni.networkfilter.common.cache;
+package ls.ni.networkfilter.common.cache.types;
 
+import ls.ni.networkfilter.common.cache.Cache;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;

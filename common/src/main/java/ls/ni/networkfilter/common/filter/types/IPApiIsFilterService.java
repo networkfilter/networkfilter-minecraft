@@ -1,8 +1,11 @@
-package ls.ni.networkfilter.common.filter;
+package ls.ni.networkfilter.common.filter.types;
 
 import kong.unirest.core.HttpResponse;
 import kong.unirest.core.JsonNode;
 import kong.unirest.core.Unirest;
+import ls.ni.networkfilter.common.filter.FilterException;
+import ls.ni.networkfilter.common.filter.FilterResult;
+import ls.ni.networkfilter.common.filter.FilterService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

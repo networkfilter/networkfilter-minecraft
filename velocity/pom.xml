@@ -43,20 +43,13 @@
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
             </resource>
+            <!-- velocity -->
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
                 <includes>
                     <include>*.json</include>
                 </includes>
-            </resource>
-<!--            <resource>-->
-<!--                <directory>src/main/java</directory>-->
-<!--                <filtering>true</filtering>-->
-<!--            </resource>-->
-            <resource>
-                <directory>src/main/java</directory>
-                <filtering>true</filtering>
             </resource>
         </resources>
         <plugins>
@@ -109,6 +102,34 @@
                         <relocation>
                             <pattern>org.jetbrains.annotations</pattern>
                             <shadedPattern>${project.parent.groupId}.libs.org.jetbrains.annotations</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.fasterxml.jackson.annotation</pattern>
+                            <shadedPattern>${project.parent.groupId}.libs.com.fasterxml.jackson.annotation</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.fasterxml.jackson.core</pattern>
+                            <shadedPattern>${project.parent.groupId}.libs.com.fasterxml.jackson.core</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.fasterxml.jackson.databind</pattern>
+                            <shadedPattern>${project.parent.groupId}.libs.com.fasterxml.jackson.databind</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.fasterxml.jackson.dataformat.yaml</pattern>
+                            <shadedPattern>${project.parent.groupId}.libs.com.fasterxml.jackson.dataformat.yaml</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>jakarta.validation</pattern>
+                            <shadedPattern>${project.parent.groupId}.libs.jakarta.validation</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>net.bytebuddy</pattern>
+                            <shadedPattern>${project.parent.groupId}.libs.net.bytebuddy</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.yaml.snakeyaml</pattern>
+                            <shadedPattern>${project.parent.groupId}.libs.org.yaml.snakeyaml</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
