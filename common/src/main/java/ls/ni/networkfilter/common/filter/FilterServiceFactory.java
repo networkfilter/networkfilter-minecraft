@@ -19,11 +19,12 @@ public class FilterServiceFactory {
             case "networkfilter" ->
                     new NetworkFilterFilterService((String) config.services().get(config.service()).get("key"));
             case "ipapiis" -> {
-                Set<String> checkTypes = config.services().get(config.service()).entrySet()
-                        .stream().map(stringObjectEntry -> Map.entry(stringObjectEntry.getKey(), (Boolean) stringObjectEntry.getValue()))
+                Set<String> checkTypes = config.services().get(config.service()).entrySet().stream()
+                        .filter(stringObjectEntry -> stringObjectEntry.getKey().startsWith("block"))
+                        .map(stringObjectEntry -> Map.entry(stringObjectEntry.getKey(), (Boolean) stringObjectEntry.getValue()))
                         .filter(Map.Entry::getValue)
                         .map(Map.Entry::getKey)
-                        .map(s -> s.toLowerCase(Locale.ROOT))
+                        .map(s -> s.replaceFirst("block", "").toLowerCase(Locale.ROOT))
                         .collect(Collectors.toSet());
 
                 yield new IPApiIsFilterService((String) config.services().get(config.service()).get("key"), checkTypes);

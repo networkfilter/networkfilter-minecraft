@@ -15,8 +15,8 @@ public class CacheFactory {
         return switch (config.cache()) {
             case "disabled" -> new NoopCache<>();
             case "local" -> new CaffeineCache<>(
-                    (Long) config.caches().get(config.cache()).get("maximumSize"),
-                    Duration.ofMinutes((Long) config.caches().get(config.cache()).get("cacheTimeMinutes"))
+                    (Integer) config.caches().get(config.cache()).get("maximumSize"),
+                    Duration.ofMinutes((Integer) config.caches().get(config.cache()).get("cacheTimeMinutes"))
             );
             default -> throw new IllegalStateException("Cache '" + config.cache() + "' is not supported!");
         };

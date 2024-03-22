@@ -42,7 +42,7 @@ public class NetworkFilterFilterService implements FilterService {
 
         return new FilterResult(
                 data.getBoolean("blocked"),
-                "AS" + data.getInt("asn"),
+                data.getInt("asn"),
                 data.getString("org")
         );
     }

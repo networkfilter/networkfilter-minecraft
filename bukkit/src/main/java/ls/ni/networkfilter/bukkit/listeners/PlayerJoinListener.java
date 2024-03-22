@@ -29,10 +29,12 @@ public class PlayerJoinListener implements Listener {
         this.plugin.getServer().getScheduler().runTaskAsynchronously(this.plugin, () -> {
             NetworkFilterResult result = NetworkFilterCommon.getInstance().check(address);
 
-            if (result.blocked()) {
-                // TODO: put in config
-                player.kickPlayer("§3§lNetworkFilter §8§l» §7Fehler beim Verbinden. Melde dich beim Support mit der Id §e" + result.asn() + " (" + result.org() + ")");
-            }
+            this.plugin.getServer().getScheduler().runTask(this.plugin, () -> {
+                if (result.blocked()) {
+                    // TODO: put in config
+                    player.kickPlayer("§3§lNetworkFilter §8§l» §7Fehler beim Verbinden. Melde dich beim Support mit der Id §e" + result.asn() + " (" + result.org() + ")");
+                }
+            });
         });
     }
 }

@@ -7,6 +7,6 @@ import org.jetbrains.annotations.Nullable;
  * @param asn   could be null if not block
  * @param org   could be null if not block
  */
-public record FilterResult(boolean block, @Nullable String asn, @Nullable String org) {
+public record FilterResult(boolean block, @Nullable Integer asn, @Nullable String org) {
 
 }

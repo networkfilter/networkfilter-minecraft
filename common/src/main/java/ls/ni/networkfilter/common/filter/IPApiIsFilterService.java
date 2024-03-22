@@ -35,13 +35,21 @@ public class IPApiIsFilterService implements FilterService {
             throw new FilterException(response.getStatus(), response.getBody(), "Response is not successful");
         }
 
+        if(response.getBody().getObject().getBoolean("is_bogon")) {
+            return new FilterResult(
+                    false,
+                    -1,
+                    "Internal Network"
+            );
+        }
+
         for (String checkType : this.checkTypes) {
             boolean result = response.getBody().getObject().getBoolean("is_" + checkType);
 
             if (result) {
                 return new FilterResult(
                         true,
-                        "AS" + response.getBody().getObject().getJSONObject("asn").getInt("asn"),
+                        response.getBody().getObject().getJSONObject("asn").getInt("asn"),
                         response.getBody().getObject().getJSONObject("asn").getString("org")
                 );
             }
@@ -49,7 +57,7 @@ public class IPApiIsFilterService implements FilterService {
 
         return new FilterResult(
                 false,
-                "AS" + response.getBody().getObject().getJSONObject("asn").getInt("asn"),
+                response.getBody().getObject().getJSONObject("asn").getInt("asn"),
                 response.getBody().getObject().getJSONObject("asn").getString("org")
         );
     }
