@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ls.ni.networkfilter.common.config.cache.CacheSettings;
 import ls.ni.networkfilter.common.config.cache.CacheType;
+import ls.ni.networkfilter.common.config.consequence.ConsequenceSettings;
+import ls.ni.networkfilter.common.config.ignore.IgnoreSettings;
 import ls.ni.networkfilter.common.config.service.ServiceSettings;
 import ls.ni.networkfilter.common.config.service.ServiceType;
 
@@ -15,6 +17,10 @@ import ls.ni.networkfilter.common.config.service.ServiceType;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Config {
+
+    @Valid
+    @NotNull
+    private Boolean debug;
 
     @Valid
     @NotNull
@@ -31,4 +37,12 @@ public class Config {
     @Valid
     @NotNull
     private ServiceSettings services;
+
+    @Valid
+    @NotNull
+    private IgnoreSettings ignore;
+
+    @Valid
+    @NotNull
+    private ConsequenceSettings consequences;
 }

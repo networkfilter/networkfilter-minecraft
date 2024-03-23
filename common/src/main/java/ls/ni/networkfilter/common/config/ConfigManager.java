@@ -30,8 +30,7 @@ public class ConfigManager {
         try {
             this.config = this.mapper.readValue(this.configFile, Config.class);
         } catch (IOException e) {
-            // TODO: 22.03.2024 add logging instead throwing exception
-            throw new RuntimeException(e);
+            throw new RuntimeException("Could not load config " + this.configFile, e);
         }
     }
 
@@ -54,7 +53,7 @@ public class ConfigManager {
 
             Files.copy(inputStream, this.configFile.toPath());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Could not copy default file " + this.configFile, e);
         }
     }
 }

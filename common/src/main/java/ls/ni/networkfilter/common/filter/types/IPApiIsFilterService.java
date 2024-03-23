@@ -3,12 +3,15 @@ package ls.ni.networkfilter.common.filter.types;
 import kong.unirest.core.HttpResponse;
 import kong.unirest.core.JsonNode;
 import kong.unirest.core.Unirest;
+import kong.unirest.core.json.JSONObject;
+import ls.ni.networkfilter.common.NetworkFilterCommon;
 import ls.ni.networkfilter.common.filter.FilterException;
 import ls.ni.networkfilter.common.filter.FilterResult;
 import ls.ni.networkfilter.common.filter.FilterService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
 import java.util.Set;
 
 public class IPApiIsFilterService implements FilterService {
@@ -38,30 +41,25 @@ public class IPApiIsFilterService implements FilterService {
             throw new FilterException(response.getStatus(), response.getBody(), "Response is not successful");
         }
 
-        if(response.getBody().getObject().getBoolean("is_bogon")) {
-            return new FilterResult(
-                    false,
-                    -1,
-                    "Internal Network"
-            );
-        }
+        JSONObject asn = response.getBody().getObject().getJSONObject("asn");
 
         for (String checkType : this.checkTypes) {
             boolean result = response.getBody().getObject().getBoolean("is_" + checkType);
 
             if (result) {
+                NetworkFilterCommon.getInstance().debug("[{0}] {1} blocked by check {2}", ip, this.getClass().getSimpleName(), checkType);
                 return new FilterResult(
                         true,
-                        response.getBody().getObject().getJSONObject("asn").getInt("asn"),
-                        response.getBody().getObject().getJSONObject("asn").getString("org")
+                        Optional.ofNullable(asn).map(jsonObject -> jsonObject.getInt("asn")).orElse(-1),
+                        Optional.ofNullable(asn).map(jsonObject -> jsonObject.getString("org")).orElse("Unknown")
                 );
             }
         }
 
         return new FilterResult(
                 false,
-                response.getBody().getObject().getJSONObject("asn").getInt("asn"),
-                response.getBody().getObject().getJSONObject("asn").getString("org")
+                Optional.ofNullable(asn).map(jsonObject -> jsonObject.getInt("asn")).orElse(-1),
+                Optional.ofNullable(asn).map(jsonObject -> jsonObject.getString("org")).orElse("Unknown")
         );
     }
 }

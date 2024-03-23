@@ -1,15 +1,22 @@
 package ls.ni.networkfilter.common;
 
+import jakarta.validation.constraints.Null;
+import lombok.Getter;
 import ls.ni.networkfilter.common.cache.Cache;
 import ls.ni.networkfilter.common.cache.CacheFactory;
 import ls.ni.networkfilter.common.config.Config;
 import ls.ni.networkfilter.common.config.ConfigManager;
 import ls.ni.networkfilter.common.filter.*;
+import org.apache.commons.net.util.SubnetUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.text.MessageFormat;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -17,12 +24,13 @@ import java.util.logging.Logger;
 
 public class NetworkFilterCommon {
 
+    private static NetworkFilterCommon instance;
+
     private final @NotNull Logger logger;
+    @Getter
     private final @NotNull ConfigManager configManager;
     private final @NotNull Cache<String, FilterResult> filterCache;
     private final @NotNull FilterService filterService;
-
-    private static NetworkFilterCommon instance;
 
     public NetworkFilterCommon(@NotNull Logger logger, @NotNull ConfigManager configManager, @NotNull Cache<String, FilterResult> filterCache, @NotNull FilterService filterService) {
         this.logger = logger;
@@ -64,29 +72,50 @@ public class NetworkFilterCommon {
         return instance;
     }
 
-    public NetworkFilterResult check(@NotNull String ip) {
-        long startTime = System.nanoTime();
+    public static @NotNull Config getConfig() {
+        return getInstance().getConfigManager().getConfig();
+    }
 
-        try {
-            InetAddress inetAddress = Inet4Address.getByName(ip);
-
-            // TODO: temp, should be transformed to ignore array in config
-            if (inetAddress.isLoopbackAddress() || inetAddress.isAnyLocalAddress() || inetAddress.isLinkLocalAddress() || inetAddress.isSiteLocalAddress()) {
-                return new NetworkFilterResult(
-                        false,
-                        -1,
-                        "Internal Network",
-                        false,
-                        TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime)
-                );
-            }
-        } catch (Throwable t) {
-            this.logger.log(Level.SEVERE, "Error while checking inetAddress for local and bogon", t);
+    public void debug(String message) {
+        if (!getConfig().getDebug()) {
+            return;
         }
 
-        Optional<FilterResult> cached = Optional.ofNullable(this.filterCache.getIfPresent(ip));
+        this.logger.info("[DEBUG] " + message);
+    }
 
+    public void debug(String pattern, Object... arguments) {
+        if (!getConfig().getDebug()) {
+            return;
+        }
+
+        this.debug(MessageFormat.format(pattern, arguments));
+    }
+
+    public @NotNull NetworkFilterResult check(@Nullable SocketAddress address) {
+        if (!(address instanceof InetSocketAddress)) {
+            throw new IllegalStateException("SocketAddress is not InetSocketAddress");
+        }
+
+        return check((InetSocketAddress) address);
+    }
+
+    public @NotNull NetworkFilterResult check(@Nullable InetSocketAddress address) {
+        if (address == null || address.getAddress() == null) {
+            throw new IllegalStateException("InetSocketAddress or InetAddress is null");
+        }
+
+        return check(address.getAddress().getHostAddress());
+    }
+
+    private @NotNull NetworkFilterResult check(@NotNull String ip) {
+        long startTime = System.nanoTime();
+
+        // cache
+        Optional<FilterResult> cached = Optional.ofNullable(this.filterCache.getIfPresent(ip));
         if (cached.isPresent()) {
+            this.debug("[{0}] Result is cached: {1}", ip, cached.get());
+
             return new NetworkFilterResult(
                     cached.get().block(),
                     cached.get().asn(),
@@ -96,6 +125,32 @@ public class NetworkFilterCommon {
             );
         }
 
+        // ignore
+        try {
+            for (String network : this.configManager.getConfig().getIgnore().getNetworks()) {
+                SubnetUtils subnetUtils = new SubnetUtils(network);
+
+                if (subnetUtils.getInfo().isInRange(ip)) {
+                    FilterResult filterResult = new FilterResult(false, null, null);
+
+                    this.filterCache.put(ip, filterResult);
+
+                    this.debug("[{0}] IP is in ignored range: {1}", ip, network);
+
+                    return new NetworkFilterResult(
+                            false,
+                            -1,
+                            "Ignored Network",
+                            false,
+                            TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime)
+                    );
+                }
+            }
+        } catch (Throwable t) {
+            this.logger.log(Level.SEVERE, "Error while checking inetAddress for ignored", t);
+        }
+
+        // check
         FilterResult filterResult;
         try {
             filterResult = this.filterService.check(ip);
@@ -111,8 +166,9 @@ public class NetworkFilterCommon {
             filterResult = new FilterResult(false, null, null);
         }
 
-
         this.filterCache.put(ip, filterResult);
+
+        this.debug("[{0}] Requested: {1}", ip, filterResult);
 
         return new NetworkFilterResult(
                 filterResult.block(),

@@ -27,11 +27,16 @@ package ls.ni.networkfilter.bungee.listeners;
 import ls.ni.networkfilter.bungee.NetworkFilterBungeePlugin;
 import ls.ni.networkfilter.common.NetworkFilterCommon;
 import ls.ni.networkfilter.common.NetworkFilterResult;
+import ls.ni.networkfilter.common.util.PlaceholderUtil;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.util.Optional;
 
 public class PostLoginListener implements Listener {
 
@@ -41,39 +46,38 @@ public class PostLoginListener implements Listener {
         this.plugin = plugin;
     }
 
-    // TODO: make non-destructive and available in config?
-//    @EventHandler
-//    public void onJoin(PreLoginEvent event) {
-//        int connected = 0;
-//
-//        for (UUID uuid : RedisBungee.getApi().getPlayersOnline()) {
-//            InetAddress playerIp = RedisBungee.getApi().getPlayerIp(uuid);
-//
-//            if (event.getConnection().getAddress().getAddress().toString().equalsIgnoreCase(playerIp.toString()))
-//                connected++;
-//        }
-//
-//        if (connected >= 3) {
-//            event.setCancelled(true);
-//            event.setCancelReason(TextComponent.fromLegacyText("§3§lNetworkFilter §8§l» §7Fehler beim Verbinden. Über deine IP sind bereits 3 Accounts online!"));
-//        }
-//    }
-
     @EventHandler
     public void onEvent(PostLoginEvent event) {
         ProxiedPlayer player = event.getPlayer();
-        String address = player.getAddress().getAddress().getHostAddress();
+        SocketAddress address = player.getSocketAddress();
 
-        if (player.hasPermission("networkfilter.ignore")) {
+        if (player.hasPermission(NetworkFilterCommon.getConfig().getIgnore().getPermission())) {
+            NetworkFilterCommon.getInstance().debug("{0} has permission, skip check", player.getName());
             return;
         }
 
         this.plugin.getProxy().getScheduler().runAsync(this.plugin, () -> {
             NetworkFilterResult result = NetworkFilterCommon.getInstance().check(address);
 
-            if (result.blocked()) {
-                // TODO: put in config
-                player.disconnect(TextComponent.fromLegacyText("§3§lNetworkFilter §8§l» §7Fehler beim Verbinden. Melde dich beim Support mit der Id §e" + result.asn() + " (" + result.org() + ")"));
+            if (!result.blocked()) {
+                return;
+            }
+
+            if (NetworkFilterCommon.getConfig().getConsequences().getKick().getEnabled()) {
+                String rawMessage = NetworkFilterCommon.getConfig().getConsequences().getKick().getMessage();
+                String message = PlaceholderUtil.replace(rawMessage, result, player.getName(), player.getUniqueId());
+
+                player.disconnect(TextComponent.fromLegacyText(message));
+            }
+
+            for (String rawCommand : NetworkFilterCommon.getConfig().getConsequences().getCommands()) {
+                if (rawCommand.isBlank()) {
+                    continue;
+                }
+
+                String command = PlaceholderUtil.replace(rawCommand, result, player.getName(), player.getUniqueId());
+                this.plugin.getProxy().getPluginManager().dispatchCommand(
+                        this.plugin.getProxy().getConsole(), command);
             }
         });
     }
