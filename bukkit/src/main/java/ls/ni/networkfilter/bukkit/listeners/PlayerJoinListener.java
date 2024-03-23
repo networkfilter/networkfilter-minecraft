@@ -56,6 +56,10 @@ public class PlayerJoinListener implements Listener {
                     this.plugin.getServer().dispatchCommand(
                             this.plugin.getServer().getConsoleSender(), command);
                 }
+
+                this.plugin.getServer().getScheduler().runTaskAsynchronously(this.plugin, () -> {
+                    NetworkFilterCommon.getInstance().sendNotify(result, player.getName(), player.getUniqueId());
+                });
             });
         });
     }

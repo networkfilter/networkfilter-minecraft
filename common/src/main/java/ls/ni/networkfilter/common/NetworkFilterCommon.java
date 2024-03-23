@@ -1,23 +1,28 @@
 package ls.ni.networkfilter.common;
 
-import jakarta.validation.constraints.Null;
+import club.minnced.discord.webhook.WebhookClient;
+import club.minnced.discord.webhook.send.WebhookEmbed;
+import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import lombok.Getter;
 import ls.ni.networkfilter.common.cache.Cache;
 import ls.ni.networkfilter.common.cache.CacheFactory;
 import ls.ni.networkfilter.common.config.Config;
 import ls.ni.networkfilter.common.config.ConfigManager;
-import ls.ni.networkfilter.common.filter.*;
+import ls.ni.networkfilter.common.filter.FilterException;
+import ls.ni.networkfilter.common.filter.FilterResult;
+import ls.ni.networkfilter.common.filter.FilterService;
+import ls.ni.networkfilter.common.filter.FilterServiceFactory;
+import ls.ni.networkfilter.common.util.PlaceholderUtil;
 import org.apache.commons.net.util.SubnetUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.net.Inet4Address;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.text.MessageFormat;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -120,6 +125,7 @@ public class NetworkFilterCommon {
                     cached.get().block(),
                     cached.get().asn(),
                     cached.get().org(),
+                    ip,
                     true,
                     TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime)
             );
@@ -146,6 +152,7 @@ public class NetworkFilterCommon {
                             false,
                             -1,
                             "Ignored Network",
+                            ip,
                             false,
                             TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime)
                     );
@@ -179,8 +186,30 @@ public class NetworkFilterCommon {
                 filterResult.block(),
                 filterResult.asn(),
                 filterResult.org(),
+                ip,
                 false,
                 TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime)
         );
+    }
+
+    public void sendNotify(NetworkFilterResult result, String name, UUID uuid) {
+        if (this.getConfigManager().getConfig().getNotify().getDiscord().getEnabled()) {
+            String webhookUrl = this.getConfigManager().getConfig().getNotify().getDiscord().getWebhook();
+
+            try (WebhookClient client = WebhookClient.withUrl(webhookUrl)) {
+                String message = PlaceholderUtil.replace(this.getConfigManager().getConfig().getNotify().getDiscord().getMessage(),
+                        result, name, uuid);
+
+                WebhookEmbed embed = new WebhookEmbedBuilder()
+                        .setColor(0xFF0000)
+                        .setDescription(message)
+                        .addField(new WebhookEmbed.EmbedField(true, "ASN", String.valueOf(result.asn())))
+                        .addField(new WebhookEmbed.EmbedField(true, "Organisation", String.valueOf(result.org())))
+                        .addField(new WebhookEmbed.EmbedField(true, "Took", result.tookMs() + "ms"))
+                        .build();
+
+                client.send(embed);
+            }
+        }
     }
 }

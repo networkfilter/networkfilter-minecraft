@@ -79,6 +79,8 @@ public class PostLoginListener implements Listener {
                 this.plugin.getProxy().getPluginManager().dispatchCommand(
                         this.plugin.getProxy().getConsole(), command);
             }
+
+            NetworkFilterCommon.getInstance().sendNotify(result, player.getName(), player.getUniqueId());
         });
     }
 }

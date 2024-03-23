@@ -56,13 +56,17 @@ ignore:
   permission: "networkfilter.bypass"
 
 consequences:
-  # Available placeholders for message and commands:
-  # %asn% - Autonomous System Number
-  # %org% - Organization
-  # %name% - Player Name
-  # %uuid% - Player UUID
   kick:
     enabled: true
-    message: "§3§lNetworkFilter §8§l» §7Fehler beim Verbinden. Melde dich beim Support mit der Id §e%asn% (%org%)"
+    # Placeholders: %asn%, %org%, %name%, %uuid%
+    message: "§3§lNetworkFilter §8§l» §7Bei dir wurde eine VPN erkannt. Melde dich im Support mit der Id §e%asn% (%org%)"
+  # Placeholders: %asn%, %org%, %name%, %uuid%
   commands:
     - ""
+
+notify:
+  discord:
+    enabled: false
+    webhook: ""
+    # Placeholders: %asn%, %org%, %name%, %uuid%
+    message: "`%name%` (`%uuid%`) hat eine VPN und wurde gekickt"
