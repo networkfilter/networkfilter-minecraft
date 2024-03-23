@@ -47,6 +47,10 @@ public class ConfigManager {
             return;
         }
 
+        if (!this.dataFolder.exists()) {
+            this.dataFolder.mkdir();
+        }
+
         try (InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("config.yml")) {
             if (inputStream == null)
                 throw new RuntimeException("config.yml not found");
