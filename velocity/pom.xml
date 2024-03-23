@@ -131,6 +131,10 @@
                             <pattern>org.yaml.snakeyaml</pattern>
                             <shadedPattern>${project.parent.groupId}.libs.org.yaml.snakeyaml</shadedPattern>
                         </relocation>
+                        <relocation>
+                            <pattern>org.apache.commons.net</pattern>
+                            <shadedPattern>${project.parent.groupId}.libs.org.apache.commons.net</shadedPattern>
+                        </relocation>
                     </relocations>
                 </configuration>
             </plugin>
