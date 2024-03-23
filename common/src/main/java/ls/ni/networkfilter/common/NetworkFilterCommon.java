@@ -128,12 +128,19 @@ public class NetworkFilterCommon {
         // ignore
         try {
             for (String network : this.configManager.getConfig().getIgnore().getNetworks()) {
-                if (!network.contains("/") && network.equals(ip)) {
+                if (!network.contains("/")) {
+                    this.logger.warning(network + " is not in CIDR notation, assuming /32");
+                    network = network + "/32";
+                }
+
+                SubnetUtils subnetUtils = new SubnetUtils(network);
+
+                if (subnetUtils.getInfo().isInRange(ip)) {
                     FilterResult filterResult = new FilterResult(false, null, null);
 
                     this.filterCache.put(ip, filterResult);
 
-                    this.debug("[{0}] IP is ignored: {1}", ip, network);
+                    this.debug("[{0}] IP is in ignored range: {1}", ip, network);
 
                     return new NetworkFilterResult(
                             false,
@@ -142,24 +149,6 @@ public class NetworkFilterCommon {
                             false,
                             TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime)
                     );
-                } else if (network.contains("/")) {
-                    SubnetUtils subnetUtils = new SubnetUtils(network);
-
-                    if (subnetUtils.getInfo().isInRange(ip)) {
-                        FilterResult filterResult = new FilterResult(false, null, null);
-
-                        this.filterCache.put(ip, filterResult);
-
-                        this.debug("[{0}] IP is in ignored range: {1}", ip, network);
-
-                        return new NetworkFilterResult(
-                                false,
-                                -1,
-                                "Ignored Network",
-                                false,
-                                TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime)
-                        );
-                    }
                 }
             }
         } catch (Throwable t) {
