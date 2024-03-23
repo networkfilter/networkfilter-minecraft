@@ -1,0 +1,10 @@
+name: ${project.name}
+version: ${project.version}#${git.commit.id.describe}
+description: ${project.description}
+
+api-version: "1.20"
+
+author: nidotls
+website: https://github.com/nidotls/${project.parent.name}
+
+main: ${project.groupId}.bukkit.${project.name}Plugin

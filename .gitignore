@@ -1,6 +1,6 @@
 
-# Created by https://www.gitignore.io/api/git,maven,intellij+all
-# Edit at https://www.gitignore.io/?templates=git,maven,intellij+all
+# Created by https://www.toptal.com/developers/gitignore/api/git,maven,intellij+all
+# Edit at https://www.toptal.com/developers/gitignore?templates=git,maven,intellij+all
 
 ### Git ###
 # Created by git for backups. To disable backups in Git:
@@ -18,7 +18,7 @@
 *_REMOTE_*.txt
 
 ### Intellij+all ###
-# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and WebStorm
+# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
 # User-specific stuff
@@ -48,9 +48,14 @@
 # When using Gradle or Maven with auto-import, you should exclude module files,
 # since they will be recreated, and may cause churn.  Uncomment if using
 # auto-import.
+# .idea/artifacts
+# .idea/compiler.xml
+# .idea/jarRepositories.xml
 # .idea/modules.xml
 # .idea/*.iml
 # .idea/modules
+# *.iml
+# *.ipr
 
 # CMake
 cmake-build-*/
@@ -85,9 +90,6 @@ fabric.properties
 # Android studio 3.1+ serialized cache file
 .idea/caches/build_file_checksums.ser
 
-# JetBrains templates
-**___jb_tmp___
-
 ### Intellij+all Patch ###
 # Ignores the whole .idea folder and all .iml files
 # See https://github.com/joeblau/gitignore.io/issues/186 and https://github.com/joeblau/gitignore.io/issues/360
@@ -114,6 +116,9 @@ release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
+# https://github.com/takari/maven-wrapper#usage-without-binary-jar
 .mvn/wrapper/maven-wrapper.jar
 
-# End of https://www.gitignore.io/api/git,maven,intellij+all
+# End of https://www.toptal.com/developers/gitignore/api/git,maven,intellij+all
+
+artifacts/

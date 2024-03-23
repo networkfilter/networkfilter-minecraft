@@ -1,0 +1,68 @@
+debug: false
+
+cache: "disabled"
+service: "networkfilter"
+
+caches:
+  # No cache
+  disabled: { }
+
+  # Local cache
+  local:
+    maximumSize: 1000
+    cacheTimeMinutes: 15
+
+services:
+  # https://nf.ni.ls
+  networkfilter:
+    # Required
+    key: ""
+
+  # https://ipapi.is
+  ipapiis:
+    # Optional, needed if rate-limited
+    key: ""
+
+    # Check https://ipapi.is/developers.html#top-level-api-output
+    block:
+      bogon: false
+      mobile: false
+      crawler: false
+      datacenter: true
+      tor: true
+      proxy: true
+      vpn: true
+      abuser: true
+
+ignore:
+  networks:
+    - "0.0.0.0/8"
+    - "10.0.0.0/8"
+    - "100.64.0.0/10"
+    - "127.0.0.0/8"
+    - "127.0.53.53"
+    - "169.254.0.0/16"
+    - "172.16.0.0/12"
+    - "192.0.0.0/24"
+    - "192.0.2.0/24"
+    - "192.168.0.0/16"
+    - "198.18.0.0/15"
+    - "198.51.100.0/24"
+    - "203.0.113.0/24"
+    - "224.0.0.0/4"
+    - "240.0.0.0/4"
+    - "255.255.255.255/32"
+    - "::1/128"
+  permission: "networkfilter.bypass"
+
+consequences:
+  # Available placeholders for message and commands:
+  # %asn% - Autonomous System Number
+  # %org% - Organization
+  # %name% - Player Name
+  # %uuid% - Player UUID
+  kick:
+    enabled: true
+    message: "§3§lNetworkFilter §8§l» §7Fehler beim Verbinden. Melde dich beim Support mit der Id §e%asn% (%org%)"
+  commands:
+    - ""

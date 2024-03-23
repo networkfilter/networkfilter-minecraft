@@ -1,0 +1,11 @@
+name: ${project.name}
+version: ${project.version}#${git.commit.id.describe}
+description: ${project.description}
+
+softdepend:
+  - RedisBungee
+
+author: nidotls
+website: https://github.com/nidotls/${project.parent.name}
+
+main: ${project.groupId}.bungee.${project.name}Plugin
