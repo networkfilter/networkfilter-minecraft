@@ -38,23 +38,25 @@ public class PlayerJoinListener implements Listener {
                 return;
             }
 
-            if (NetworkFilterCommon.getConfig().getConsequences().getKick().getEnabled()) {
-                String rawMessage = NetworkFilterCommon.getConfig().getConsequences().getKick().getMessage();
-                String message = PlaceholderUtil.replace(rawMessage, result, player.getName(), player.getUniqueId());
+            this.plugin.getServer().getScheduler().runTask(this.plugin, () -> {
+                if (NetworkFilterCommon.getConfig().getConsequences().getKick().getEnabled()) {
+                    String rawMessage = NetworkFilterCommon.getConfig().getConsequences().getKick().getMessage();
+                    String message = PlaceholderUtil.replace(rawMessage, result, player.getName(), player.getUniqueId());
 
-                player.kickPlayer(message);
-            }
-
-            for (String rawCommand : NetworkFilterCommon.getConfig().getConsequences().getCommands()) {
-                if (rawCommand.isBlank()) {
-                    continue;
+                    player.kickPlayer(message);
                 }
 
-                String command = PlaceholderUtil.replace(rawCommand, result, player.getName(), player.getUniqueId());
+                for (String rawCommand : NetworkFilterCommon.getConfig().getConsequences().getCommands()) {
+                    if (rawCommand.isBlank()) {
+                        continue;
+                    }
 
-                this.plugin.getServer().dispatchCommand(
-                        this.plugin.getServer().getConsoleSender(), command);
-            }
+                    String command = PlaceholderUtil.replace(rawCommand, result, player.getName(), player.getUniqueId());
+
+                    this.plugin.getServer().dispatchCommand(
+                            this.plugin.getServer().getConsoleSender(), command);
+                }
+            });
         });
     }
 }
