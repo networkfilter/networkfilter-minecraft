@@ -53,6 +53,8 @@ public class PostLoginListener {
                 this.plugin.getServer().getCommandManager().executeAsync(
                         this.plugin.getServer().getConsoleCommandSource(), command);
             }
+
+            NetworkFilterCommon.getInstance().sendNotify(result, player.getUsername(), player.getUniqueId());
         }).schedule();
     }
 }

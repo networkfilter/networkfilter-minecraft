@@ -9,6 +9,7 @@ import ls.ni.networkfilter.common.config.cache.CacheSettings;
 import ls.ni.networkfilter.common.config.cache.CacheType;
 import ls.ni.networkfilter.common.config.consequence.ConsequenceSettings;
 import ls.ni.networkfilter.common.config.ignore.IgnoreSettings;
+import ls.ni.networkfilter.common.config.notify.NotifySettings;
 import ls.ni.networkfilter.common.config.service.ServiceSettings;
 import ls.ni.networkfilter.common.config.service.ServiceType;
 
@@ -45,4 +46,8 @@ public class Config {
     @Valid
     @NotNull
     private ConsequenceSettings consequences;
+
+    @Valid
+    @NotNull
+    private NotifySettings notify;
 }
