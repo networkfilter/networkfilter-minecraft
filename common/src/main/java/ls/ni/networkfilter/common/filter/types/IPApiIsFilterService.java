@@ -34,7 +34,7 @@ public class IPApiIsFilterService implements FilterService {
 
     @Override
     public @NotNull FilterResult check(@NotNull String ip) {
-        HttpResponse<JsonNode> response = Unirest.get("https://api.ipapi.is?q=" + ip + (this.apiKey != null ? "&api=" + this.apiKey : ""))
+        HttpResponse<JsonNode> response = Unirest.get("https://api.ipapi.is?q=" + ip + (this.apiKey != null ? "&key=" + this.apiKey : ""))
                 .asJson();
 
         if (!response.isSuccess()) {
