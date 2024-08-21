@@ -203,6 +203,7 @@ public class NetworkFilterCommon {
                 WebhookEmbed embed = new WebhookEmbedBuilder()
                         .setColor(0xFF0000)
                         .setDescription(message)
+                        .setThumbnailUrl("https://mc-api.io/render/" + uuid)
                         .addField(new WebhookEmbed.EmbedField(true, "ASN", String.valueOf(result.asn())))
                         .addField(new WebhookEmbed.EmbedField(true, "Organisation", String.valueOf(result.org())))
                         .addField(new WebhookEmbed.EmbedField(true, "Took", result.tookMs() + "ms"))
