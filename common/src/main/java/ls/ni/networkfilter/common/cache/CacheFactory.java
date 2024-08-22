@@ -21,9 +21,7 @@ public class CacheFactory {
             }
             case REDIS -> {
                 yield new RedisCache(
-                        config.getCaches().getRedis().getHost(),
-                        config.getCaches().getRedis().getPort(),
-                        config.getCaches().getRedis().getPassword(),
+                        config.getCaches().getRedis().getUri(),
                         Duration.ofMinutes(config.getCaches().getRedis().getCacheTimeMinutes())
                 );
             }

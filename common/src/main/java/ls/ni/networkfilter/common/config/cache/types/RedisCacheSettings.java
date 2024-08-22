@@ -12,14 +12,7 @@ import lombok.NoArgsConstructor;
 public class RedisCacheSettings {
 
     @NotNull
-    private String host;
-
-    @NotNull
-    @Positive
-    private Integer port;
-
-    @NotNull
-    private String password;
+    private String uri;
 
     @NotNull
     @Positive
