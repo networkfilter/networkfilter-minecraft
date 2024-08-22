@@ -1,11 +1,12 @@
 package ls.ni.networkfilter.common.cache.types;
 
 import ls.ni.networkfilter.common.cache.Cache;
+import ls.ni.networkfilter.common.filter.FilterResult;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
 
-public class NoopCache<K, V> implements Cache<K, V> {
+public class NoopCache implements Cache {
 
     @Override
     public @NotNull String getName() {
@@ -13,16 +14,16 @@ public class NoopCache<K, V> implements Cache<K, V> {
     }
 
     @Override
-    public V getIfPresent(@NotNull K key) {
+    public FilterResult getIfPresent(@NotNull String key) {
         return null;
     }
 
     @Override
-    public @NotNull V get(@NotNull K key, Function<? super K, ? extends V> mappingFunction) {
+    public @NotNull FilterResult get(@NotNull String key, Function<String, ? extends FilterResult> mappingFunction) {
         return mappingFunction.apply(key);
     }
 
     @Override
-    public void put(@NotNull K key, @NotNull V value) {
+    public void put(@NotNull String key, @NotNull FilterResult value) {
     }
 }

@@ -12,6 +12,13 @@ caches:
     maximumSize: 1000
     cacheTimeMinutes: 15
 
+  # Redis cache
+  redis:
+    host: "localhost"
+    port: 6379
+    password: ""
+    cacheTimeMinutes: 15
+
 services:
   # https://nf.ni.ls
   networkfilter:

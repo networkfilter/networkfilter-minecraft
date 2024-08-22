@@ -34,10 +34,10 @@ public class NetworkFilterCommon {
     private final @NotNull Logger logger;
     @Getter
     private final @NotNull ConfigManager configManager;
-    private final @NotNull Cache<String, FilterResult> filterCache;
+    private final @NotNull Cache filterCache;
     private final @NotNull FilterService filterService;
 
-    public NetworkFilterCommon(@NotNull Logger logger, @NotNull ConfigManager configManager, @NotNull Cache<String, FilterResult> filterCache, @NotNull FilterService filterService) {
+    public NetworkFilterCommon(@NotNull Logger logger, @NotNull ConfigManager configManager, @NotNull Cache filterCache, @NotNull FilterService filterService) {
         this.logger = logger;
         this.configManager = configManager;
         this.filterCache = filterCache;

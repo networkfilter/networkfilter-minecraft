@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ls.ni.networkfilter.common.config.cache.types.DisabledCacheSettings;
 import ls.ni.networkfilter.common.config.cache.types.LocalCacheSettings;
+import ls.ni.networkfilter.common.config.cache.types.RedisCacheSettings;
 
 @Data
 @NoArgsConstructor
@@ -20,4 +21,9 @@ public class CacheSettings {
     @Valid
     @NotNull
     private LocalCacheSettings local;
+
+    @Valid
+    @NotNull
+    private RedisCacheSettings redis;
+
 }
