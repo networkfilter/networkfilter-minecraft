@@ -13,6 +13,7 @@ import ls.ni.networkfilter.common.filter.FilterResult;
 import ls.ni.networkfilter.common.filter.FilterService;
 import ls.ni.networkfilter.common.filter.FilterServiceFactory;
 import ls.ni.networkfilter.common.util.PlaceholderUtil;
+import org.apache.commons.net.util.SubnetUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -131,35 +132,35 @@ public class NetworkFilterCommon {
         }
 
         // ignore
-//        try {
-//            for (String network : this.configManager.getConfig().getIgnore().getNetworks()) {
-//                if (!network.contains("/")) {
-//                    this.logger.warning(network + " is not in CIDR notation, assuming /32");
-//                    network = network + "/32";
-//                }
-//
-//                SubnetUtils subnetUtils = new SubnetUtils(network);
-//
-//                if (subnetUtils.getInfo().isInRange(ip)) {
-//                    FilterResult filterResult = new FilterResult(false, null, null);
-//
-//                    this.filterCache.put(ip, filterResult);
-//
-//                    this.debug("[{0}] IP is in ignored range: {1}", ip, network);
-//
-//                    return new NetworkFilterResult(
-//                            false,
-//                            -1,
-//                            "Ignored Network",
-//                            ip,
-//                            false,
-//                            TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime)
-//                    );
-//                }
-//            }
-//        } catch (Throwable t) {
-//            this.logger.log(Level.SEVERE, "Error while checking inetAddress for ignored", t);
-//        }
+        try {
+            for (String network : this.configManager.getConfig().getIgnore().getNetworks()) {
+                if (!network.contains("/")) {
+                    this.logger.warning(network + " is not in CIDR notation, assuming /32");
+                    network = network + "/32";
+                }
+
+                SubnetUtils subnetUtils = new SubnetUtils(network);
+
+                if (subnetUtils.getInfo().isInRange(ip)) {
+                    FilterResult filterResult = new FilterResult(false, null, null);
+
+                    this.filterCache.put(ip, filterResult);
+
+                    this.debug("[{0}] IP is in ignored range: {1}", ip, network);
+
+                    return new NetworkFilterResult(
+                            false,
+                            -1,
+                            "Ignored Network",
+                            ip,
+                            false,
+                            TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime)
+                    );
+                }
+            }
+        } catch (Throwable t) {
+            this.logger.log(Level.SEVERE, "Error while checking inetAddress for ignored", t);
+        }
 
         // check
         FilterResult filterResult;
