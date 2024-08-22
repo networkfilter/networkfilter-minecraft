@@ -159,6 +159,14 @@
                             <pattern>org.slf4j</pattern>
                             <shadedPattern>${project.parent.groupId}.libs.org.slf4j</shadedPattern>
                         </relocation>
+                        <relocation>
+                            <pattern>redis.clients.jedis</pattern>
+                            <shadedPattern>${project.parent.groupId}.libs.redis.clients.jedis</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.apache.commons.pool2</pattern>
+                            <shadedPattern>${project.parent.groupId}.libs.org.apache.commons.pool2</shadedPattern>
+                        </relocation>
                     </relocations>
                 </configuration>
             </plugin>

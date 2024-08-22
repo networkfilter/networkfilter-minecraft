@@ -7,7 +7,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jetbrains.annotations.NotNull;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
 
 import java.time.Duration;
 import java.util.function.Function;
@@ -19,8 +18,8 @@ public class RedisCache implements Cache {
     private final JedisPool jedisPool;
     private final Duration expireAfterWrite;
 
-    public RedisCache(@NotNull String host, int port, @NotNull String password, @NotNull Duration expireAfterWrite) {
-        this.jedisPool = new JedisPool(new JedisPoolConfig(), host, port, 2000, password.isEmpty() ? null : password);
+    public RedisCache(@NotNull String uri, @NotNull Duration expireAfterWrite) {
+        this.jedisPool = new JedisPool(uri);
 
         this.expireAfterWrite = expireAfterWrite;
 
