@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum CacheType {
     DISABLED("disabled"),
     LOCAL("local"),
+    REDIS("redis"),
     ;
 
     private final String key;
