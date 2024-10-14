@@ -59,7 +59,6 @@ public class NetworkFilterFilterService implements FilterService {
             );
         }
 
-
         return new FilterResult(
                 data.getBoolean("blocked"),
                 asn,
