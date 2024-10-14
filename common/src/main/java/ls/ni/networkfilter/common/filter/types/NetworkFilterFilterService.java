@@ -5,10 +5,14 @@ import kong.unirest.core.HttpResponse;
 import kong.unirest.core.JsonNode;
 import kong.unirest.core.Unirest;
 import kong.unirest.core.json.JSONObject;
+import ls.ni.networkfilter.common.NetworkFilterCommon;
 import ls.ni.networkfilter.common.filter.FilterException;
 import ls.ni.networkfilter.common.filter.FilterResult;
 import ls.ni.networkfilter.common.filter.FilterService;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
+import java.util.Optional;
 
 public class NetworkFilterFilterService implements FilterService {
 
@@ -44,9 +48,20 @@ public class NetworkFilterFilterService implements FilterService {
 
         JSONObject data = body.getJSONObject("data");
 
+        //whitelist
+        List<Integer> asnWhitelist = NetworkFilterCommon.getConfig().getAsnWhitelist();
+        int asn = data.getInt("asn");
+        if (asnWhitelist.contains(asn)) {
+            return new FilterResult(
+                    false,
+                    asn,
+                    data.getString("org")
+            );
+        }
+
         return new FilterResult(
                 data.getBoolean("blocked"),
-                data.getInt("asn"),
+                asn,
                 data.getString("org")
         );
     }

@@ -13,6 +13,8 @@ import ls.ni.networkfilter.common.config.notify.NotifySettings;
 import ls.ni.networkfilter.common.config.service.ServiceSettings;
 import ls.ni.networkfilter.common.config.service.ServiceType;
 
+import java.util.List;
+
 @Valid
 @Data
 @NoArgsConstructor
@@ -42,6 +44,10 @@ public class Config {
     @Valid
     @NotNull
     private IgnoreSettings ignore;
+
+    @Valid
+    @NotNull
+    private List<Integer> asnWhitelist;
 
     @Valid
     @NotNull
