@@ -47,7 +47,7 @@ public class IPApiIsFilterService implements FilterService {
         // whitelist
         List<Integer> asnWhitelist = NetworkFilterCommon.getConfig().getAsnWhitelist();
         Integer asn = Optional.ofNullable(asnObject).map(jsonObject -> jsonObject.getInt("asn")).orElse(null);
-        if (asn != null && asnWhitelist.contains(asn)) {
+        if (asn != -1 && asnWhitelist.contains(asn)) {
             return new FilterResult(
                     false,
                     asn,
