@@ -59,6 +59,8 @@ ignore:
     - "255.255.255.255/32"
   permission: "networkfilter.bypass"
 
+asnWhitelist: []
+
 consequences:
   kick:
     enabled: true
