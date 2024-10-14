@@ -42,15 +42,16 @@ public class IPApiIsFilterService implements FilterService {
             throw new FilterException(response.getStatus(), response.getBody(), "Response is not successful");
         }
 
-        JSONObject asn = response.getBody().getObject().getJSONObject("asn");
+        JSONObject asnObject = response.getBody().getObject().getJSONObject("asn");
 
         // whitelist
         List<Integer> asnWhitelist = NetworkFilterCommon.getConfig().getAsnWhitelist();
-        if (asnWhitelist.stream().anyMatch(integer -> Optional.ofNullable(asn).map(jsonObject -> jsonObject.getInt("asn")).orElse(-1).equals(integer))) {
+        Integer asn = Optional.ofNullable(asnObject).map(jsonObject -> jsonObject.getInt("asn")).orElse(null);
+        if (asn != null && asnWhitelist.contains(asn)) {
             return new FilterResult(
                     false,
-                    Optional.ofNullable(asn).map(jsonObject -> jsonObject.getInt("asn")).orElse(-1),
-                    Optional.ofNullable(asn).map(jsonObject -> jsonObject.getString("org")).orElse("Unknown")
+                    asn,
+                    Optional.of(asnObject).map(jsonObject -> jsonObject.getString("org")).orElse("Unknown")
             );
         }
 
@@ -61,16 +62,16 @@ public class IPApiIsFilterService implements FilterService {
                 NetworkFilterCommon.getInstance().debug("[{0}] {1} blocked by check {2}", ip, this.getClass().getSimpleName(), checkType);
                 return new FilterResult(
                         true,
-                        Optional.ofNullable(asn).map(jsonObject -> jsonObject.getInt("asn")).orElse(-1),
-                        Optional.ofNullable(asn).map(jsonObject -> jsonObject.getString("org")).orElse("Unknown")
+                        asn,
+                        Optional.ofNullable(asnObject).map(jsonObject -> jsonObject.getString("org")).orElse("Unknown")
                 );
             }
         }
 
         return new FilterResult(
                 false,
-                Optional.ofNullable(asn).map(jsonObject -> jsonObject.getInt("asn")).orElse(-1),
-                Optional.ofNullable(asn).map(jsonObject -> jsonObject.getString("org")).orElse("Unknown")
+                asn,
+                Optional.ofNullable(asnObject).map(jsonObject -> jsonObject.getString("org")).orElse("Unknown")
         );
     }
 }

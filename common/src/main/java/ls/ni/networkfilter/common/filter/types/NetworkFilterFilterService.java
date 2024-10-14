@@ -50,10 +50,11 @@ public class NetworkFilterFilterService implements FilterService {
 
         //whitelist
         List<Integer> asnWhitelist = NetworkFilterCommon.getConfig().getAsnWhitelist();
-        if (asnWhitelist.contains(data.getInt("asn"))) {
+        int asn = data.getInt("asn");
+        if (asnWhitelist.contains(asn)) {
             return new FilterResult(
                     false,
-                    data.getInt("asn"),
+                    asn,
                     data.getString("org")
             );
         }
@@ -61,7 +62,7 @@ public class NetworkFilterFilterService implements FilterService {
 
         return new FilterResult(
                 data.getBoolean("blocked"),
-                data.getInt("asn"),
+                asn,
                 data.getString("org")
         );
     }
