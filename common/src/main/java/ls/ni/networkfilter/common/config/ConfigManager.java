@@ -36,7 +36,7 @@ public class ConfigManager {
 
     public Config getConfig() {
         if (this.config == null) {
-            reloadConfig();
+            this.reloadConfig();
         }
 
         return this.config;

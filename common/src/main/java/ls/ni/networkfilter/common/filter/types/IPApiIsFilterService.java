@@ -11,6 +11,7 @@ import ls.ni.networkfilter.common.filter.FilterService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -42,6 +43,16 @@ public class IPApiIsFilterService implements FilterService {
         }
 
         JSONObject asn = response.getBody().getObject().getJSONObject("asn");
+
+        // whitelist
+        List<Integer> asnWhitelist = NetworkFilterCommon.getConfig().getAsnWhitelist();
+        if (asnWhitelist.stream().anyMatch(integer -> Optional.ofNullable(asn).map(jsonObject -> jsonObject.getInt("asn")).orElse(-1).equals(integer))) {
+            return new FilterResult(
+                    false,
+                    Optional.ofNullable(asn).map(jsonObject -> jsonObject.getInt("asn")).orElse(-1),
+                    Optional.ofNullable(asn).map(jsonObject -> jsonObject.getString("org")).orElse("Unknown")
+            );
+        }
 
         for (String checkType : this.checkTypes) {
             boolean result = response.getBody().getObject().getBoolean("is_" + checkType);
