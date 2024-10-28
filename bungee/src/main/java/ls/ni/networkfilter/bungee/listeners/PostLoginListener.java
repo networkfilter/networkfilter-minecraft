@@ -54,10 +54,10 @@ public class PostLoginListener implements Listener {
             return;
         }
 
+        event.registerIntent(this.plugin);
+
         this.plugin.getProxy().getScheduler().runAsync(this.plugin, () -> {
             try {
-                event.registerIntent(this.plugin);
-
                 NetworkFilterResult result = NetworkFilterCommon.getInstance().check(address);
 
                 if (!result.blocked()) {
