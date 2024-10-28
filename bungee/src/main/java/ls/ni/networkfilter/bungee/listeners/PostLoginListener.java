@@ -34,9 +34,7 @@ import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
-import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.util.Optional;
 
 public class PostLoginListener implements Listener {
 
@@ -57,30 +55,36 @@ public class PostLoginListener implements Listener {
         }
 
         this.plugin.getProxy().getScheduler().runAsync(this.plugin, () -> {
-            NetworkFilterResult result = NetworkFilterCommon.getInstance().check(address);
+            try {
+                event.registerIntent(this.plugin);
 
-            if (!result.blocked()) {
-                return;
-            }
+                NetworkFilterResult result = NetworkFilterCommon.getInstance().check(address);
 
-            if (NetworkFilterCommon.getConfig().getConsequences().getKick().getEnabled()) {
-                String rawMessage = NetworkFilterCommon.getConfig().getConsequences().getKick().getMessage();
-                String message = PlaceholderUtil.replace(rawMessage, result, player.getName(), player.getUniqueId());
-
-                player.disconnect(TextComponent.fromLegacyText(message));
-            }
-
-            for (String rawCommand : NetworkFilterCommon.getConfig().getConsequences().getCommands()) {
-                if (rawCommand.isBlank()) {
-                    continue;
+                if (!result.blocked()) {
+                    return;
                 }
 
-                String command = PlaceholderUtil.replace(rawCommand, result, player.getName(), player.getUniqueId());
-                this.plugin.getProxy().getPluginManager().dispatchCommand(
-                        this.plugin.getProxy().getConsole(), command);
-            }
+                if (NetworkFilterCommon.getConfig().getConsequences().getKick().getEnabled()) {
+                    String rawMessage = NetworkFilterCommon.getConfig().getConsequences().getKick().getMessage();
+                    String message = PlaceholderUtil.replace(rawMessage, result, player.getName(), player.getUniqueId());
 
-            NetworkFilterCommon.getInstance().sendNotify(result, player.getName(), player.getUniqueId());
+                    player.disconnect(TextComponent.fromLegacyText(message));
+                }
+
+                for (String rawCommand : NetworkFilterCommon.getConfig().getConsequences().getCommands()) {
+                    if (rawCommand.isBlank()) {
+                        continue;
+                    }
+
+                    String command = PlaceholderUtil.replace(rawCommand, result, player.getName(), player.getUniqueId());
+                    this.plugin.getProxy().getPluginManager().dispatchCommand(
+                            this.plugin.getProxy().getConsole(), command);
+                }
+
+                NetworkFilterCommon.getInstance().sendNotify(result, player.getName(), player.getUniqueId());
+            } finally {
+                event.completeIntent(this.plugin);
+            }
         });
     }
 }
