@@ -7,6 +7,8 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.plugin.Command;
 
+import java.util.List;
+
 public class NetworkFilterCommand extends Command {
 
     public NetworkFilterCommand() {
@@ -31,20 +33,40 @@ public class NetworkFilterCommand extends Command {
             Config config = NetworkFilterCommon.getConfig();
 
             if (args[0].equalsIgnoreCase("whitelist")) {
+                List<Integer> asnWhitelist = config.getAsnWhitelist();
+
                 if (args[1].equalsIgnoreCase("add")) {
-                    config.getAsnWhitelist().add(asn);
-                    commandSender.sendMessage(TextComponent.fromLegacy("§aAdded ASN " + asn + " to whitelist"));
+                    if (asnWhitelist.contains(asn)) {
+                        commandSender.sendMessage(TextComponent.fromLegacy("§cASN " + asn + " is already in the whitelist"));
+                    } else {
+                        asnWhitelist.add(asn);
+                        commandSender.sendMessage(TextComponent.fromLegacy("§aAdded ASN " + asn + " to whitelist"));
+                    }
                 } else {
-                    config.getAsnWhitelist().remove(asn);
-                    commandSender.sendMessage(TextComponent.fromLegacy("§aRemoved ASN " + asn + " from whitelist"));
+                    if (asnWhitelist.contains(asn)) {
+                        asnWhitelist.remove(asn);
+                        commandSender.sendMessage(TextComponent.fromLegacy("§aRemoved ASN " + asn + " from whitelist"));
+                    } else {
+                        commandSender.sendMessage(TextComponent.fromLegacy("§cASN " + asn + " is not in the whitelist"));
+                    }
                 }
             } else {
+                List<Integer> asnBlacklist = config.getAsnBlacklist();
+
                 if (args[1].equalsIgnoreCase("add")) {
-                    config.getAsnBlacklist().add(asn);
-                    commandSender.sendMessage(TextComponent.fromLegacy("§aAdded ASN " + asn + " to blacklist"));
+                    if (asnBlacklist.contains(asn)) {
+                        commandSender.sendMessage(TextComponent.fromLegacy("§cASN " + asn + " is already in the blacklist"));
+                    } else {
+                        asnBlacklist.add(asn);
+                        commandSender.sendMessage(TextComponent.fromLegacy("§aAdded ASN " + asn + " to blacklist"));
+                    }
                 } else {
-                    config.getAsnBlacklist().remove(asn);
-                    commandSender.sendMessage(TextComponent.fromLegacy("§aRemoved ASN " + asn + " from blacklist"));
+                    if (asnBlacklist.contains(asn)) {
+                        asnBlacklist.remove(asn);
+                        commandSender.sendMessage(TextComponent.fromLegacy("§aRemoved ASN " + asn + " from blacklist"));
+                    } else {
+                        commandSender.sendMessage(TextComponent.fromLegacy("§cASN " + asn + " is not in the blacklist"));
+                    }
                 }
             }
         }
