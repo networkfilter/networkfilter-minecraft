@@ -81,6 +81,16 @@ public class NetworkFilterCommand implements TabExecutor {
             return List.of("whitelist", "blacklist");
         } else if (args.length == 2) {
             return List.of("add", "remove");
+        } else if (args.length == 3) {
+            Config config = NetworkFilterCommon.getConfig();
+
+            if (args[0].equalsIgnoreCase("whitelist") && args[1].equalsIgnoreCase("remove")) {
+                return config.getAsnWhitelist().stream().map(String::valueOf).toList();
+            } else if (args[0].equalsIgnoreCase("blacklist") && args[1].equalsIgnoreCase("remove")) {
+                return config.getAsnBlacklist().stream().map(String::valueOf).toList();
+            } else {
+                return null;
+            }
         } else {
             return null;
         }
