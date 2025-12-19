@@ -13,6 +13,7 @@ import ls.ni.networkfilter.common.config.notify.NotifySettings;
 import ls.ni.networkfilter.common.config.service.ServiceSettings;
 import ls.ni.networkfilter.common.config.service.ServiceType;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Valid
@@ -51,7 +52,7 @@ public class Config {
 
     @Valid
     @NotNull
-    private List<Integer> asnBlacklist;
+    private List<Integer> asnBlacklist = new ArrayList<>();
 
     @Valid
     @NotNull
