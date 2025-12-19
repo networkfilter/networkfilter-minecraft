@@ -8,6 +8,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 public class NetworkFilterCommand implements CommandExecutor {
 
     @Override
@@ -28,20 +30,40 @@ public class NetworkFilterCommand implements CommandExecutor {
             Config config = NetworkFilterCommon.getConfig();
 
             if (args[0].equalsIgnoreCase("whitelist")) {
+                List<Integer> asnWhitelist = config.getAsnWhitelist();
+
                 if (args[1].equalsIgnoreCase("add")) {
-                    config.getAsnWhitelist().add(asn);
-                    commandSender.sendMessage("§aAdded ASN " + asn + " to whitelist");
+                    if (asnWhitelist.contains(asn)) {
+                        commandSender.sendMessage("§cASN " + asn + " is already in the whitelist");
+                    } else {
+                        asnWhitelist.add(asn);
+                        commandSender.sendMessage("§aAdded ASN " + asn + " to whitelist");
+                    }
                 } else {
-                    config.getAsnWhitelist().remove(asn);
-                    commandSender.sendMessage("§aRemoved ASN " + asn + " from whitelist");
+                    if (asnWhitelist.contains(asn)) {
+                        asnWhitelist.remove(asn);
+                        commandSender.sendMessage("§aRemoved ASN " + asn + " from whitelist");
+                    } else {
+                        commandSender.sendMessage("§cASN " + asn + " is not in the whitelist");
+                    }
                 }
             } else {
+                List<Integer> asnBlacklist = config.getAsnBlacklist();
+
                 if (args[1].equalsIgnoreCase("add")) {
-                    config.getAsnBlacklist().add(asn);
-                    commandSender.sendMessage("§aAdded ASN " + asn + " to blacklist");
+                    if (asnBlacklist.contains(asn)) {
+                        commandSender.sendMessage("§cASN " + asn + " is already in the blacklist");
+                    } else {
+                        asnBlacklist.add(asn);
+                        commandSender.sendMessage("§aAdded ASN " + asn + " to blacklist");
+                    }
                 } else {
-                    config.getAsnBlacklist().remove(asn);
-                    commandSender.sendMessage("§aRemoved ASN " + asn + " from blacklist");
+                    if (asnBlacklist.contains(asn)) {
+                        asnBlacklist.remove(asn);
+                        commandSender.sendMessage("§aRemoved ASN " + asn + " from blacklist");
+                    } else {
+                        commandSender.sendMessage("§cASN " + asn + " is not in the blacklist");
+                    }
                 }
             }
         }
