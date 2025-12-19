@@ -12,7 +12,6 @@ import ls.ni.networkfilter.common.filter.FilterService;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Optional;
 
 public class NetworkFilterFilterService implements FilterService {
 
@@ -48,9 +47,20 @@ public class NetworkFilterFilterService implements FilterService {
 
         JSONObject data = body.getJSONObject("data");
 
+        int asn = data.getInt("asn");
+
+        //blacklist
+        List<Integer> asnBlacklist = NetworkFilterCommon.getConfig().getAsnBlacklist();
+        if (asnBlacklist.contains(asn)) {
+            return new FilterResult(
+                    true,
+                    asn,
+                    data.getString("org")
+            );
+        }
+
         //whitelist
         List<Integer> asnWhitelist = NetworkFilterCommon.getConfig().getAsnWhitelist();
-        int asn = data.getInt("asn");
         if (asnWhitelist.contains(asn)) {
             return new FilterResult(
                     false,

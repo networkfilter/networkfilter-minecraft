@@ -44,9 +44,20 @@ public class IPApiIsFilterService implements FilterService {
 
         JSONObject asnObject = response.getBody().getObject().getJSONObject("asn");
 
+        int asn = Optional.ofNullable(asnObject).map(jsonObject -> jsonObject.getInt("asn")).orElse(-1);
+
+        //blacklist
+        List<Integer> asnBlacklist = NetworkFilterCommon.getConfig().getAsnBlacklist();
+        if (asn != -1 && asnBlacklist.contains(asn)) {
+            return new FilterResult(
+                    true,
+                    asn,
+                    Optional.of(asnObject).map(jsonObject -> jsonObject.getString("org")).orElse("Unknown")
+            );
+        }
+
         // whitelist
         List<Integer> asnWhitelist = NetworkFilterCommon.getConfig().getAsnWhitelist();
-        int asn = Optional.ofNullable(asnObject).map(jsonObject -> jsonObject.getInt("asn")).orElse(-1);
         if (asn != -1 && asnWhitelist.contains(asn)) {
             return new FilterResult(
                     false,

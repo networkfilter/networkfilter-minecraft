@@ -61,6 +61,8 @@ ignore:
 
 asnWhitelist: []
 
+asnBlacklist: []
+
 consequences:
   kick:
     enabled: true
