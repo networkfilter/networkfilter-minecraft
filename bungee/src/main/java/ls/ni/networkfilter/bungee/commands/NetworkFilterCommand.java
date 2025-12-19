@@ -11,6 +11,8 @@ import java.util.List;
 
 public class NetworkFilterCommand extends Command {
 
+    private static final String PREFIX = "§e§lNetworkFilter §8» §r";
+
     public NetworkFilterCommand() {
         super("networkfilter", "networkfilter.admin", "nf");
     }
@@ -20,8 +22,8 @@ public class NetworkFilterCommand extends Command {
         if (args.length < 3 ||
                 (!args[0].equalsIgnoreCase("whitelist") && !args[0].equalsIgnoreCase("blacklist")) ||
                 (!args[1].equalsIgnoreCase("add") && !args[1].equalsIgnoreCase("remove"))) {
-            commandSender.sendMessage(TextComponent.fromLegacy("§cUsage: /networkfilter whitelist add|remove <asn>"));
-            commandSender.sendMessage(TextComponent.fromLegacy("§cUsage: /networkfilter blacklist add|remove <asn>"));
+            commandSender.sendMessage(TextComponent.fromLegacy(PREFIX + "§cUsage: /networkfilter whitelist add|remove <asn>"));
+            commandSender.sendMessage(TextComponent.fromLegacy(PREFIX + "§cUsage: /networkfilter blacklist add|remove <asn>"));
         } else {
             Integer asn = Ints.tryParse(args[2]);
 
@@ -37,17 +39,17 @@ public class NetworkFilterCommand extends Command {
 
                 if (args[1].equalsIgnoreCase("add")) {
                     if (asnWhitelist.contains(asn)) {
-                        commandSender.sendMessage(TextComponent.fromLegacy("§cASN " + asn + " is already in the whitelist"));
+                        commandSender.sendMessage(TextComponent.fromLegacy(PREFIX + "§cASN " + asn + " is already in the whitelist"));
                     } else {
                         asnWhitelist.add(asn);
-                        commandSender.sendMessage(TextComponent.fromLegacy("§aAdded ASN " + asn + " to whitelist"));
+                        commandSender.sendMessage(TextComponent.fromLegacy(PREFIX + "§aAdded ASN " + asn + " to whitelist"));
                     }
                 } else {
                     if (asnWhitelist.contains(asn)) {
                         asnWhitelist.remove(asn);
-                        commandSender.sendMessage(TextComponent.fromLegacy("§aRemoved ASN " + asn + " from whitelist"));
+                        commandSender.sendMessage(TextComponent.fromLegacy(PREFIX + "§aRemoved ASN " + asn + " from whitelist"));
                     } else {
-                        commandSender.sendMessage(TextComponent.fromLegacy("§cASN " + asn + " is not in the whitelist"));
+                        commandSender.sendMessage(TextComponent.fromLegacy(PREFIX + "§cASN " + asn + " is not in the whitelist"));
                     }
                 }
             } else {
@@ -55,17 +57,17 @@ public class NetworkFilterCommand extends Command {
 
                 if (args[1].equalsIgnoreCase("add")) {
                     if (asnBlacklist.contains(asn)) {
-                        commandSender.sendMessage(TextComponent.fromLegacy("§cASN " + asn + " is already in the blacklist"));
+                        commandSender.sendMessage(TextComponent.fromLegacy(PREFIX + "§cASN " + asn + " is already in the blacklist"));
                     } else {
                         asnBlacklist.add(asn);
-                        commandSender.sendMessage(TextComponent.fromLegacy("§aAdded ASN " + asn + " to blacklist"));
+                        commandSender.sendMessage(TextComponent.fromLegacy(PREFIX + "§aAdded ASN " + asn + " to blacklist"));
                     }
                 } else {
                     if (asnBlacklist.contains(asn)) {
                         asnBlacklist.remove(asn);
-                        commandSender.sendMessage(TextComponent.fromLegacy("§aRemoved ASN " + asn + " from blacklist"));
+                        commandSender.sendMessage(TextComponent.fromLegacy(PREFIX + "§aRemoved ASN " + asn + " from blacklist"));
                     } else {
-                        commandSender.sendMessage(TextComponent.fromLegacy("§cASN " + asn + " is not in the blacklist"));
+                        commandSender.sendMessage(TextComponent.fromLegacy(PREFIX + "§cASN " + asn + " is not in the blacklist"));
                     }
                 }
             }
