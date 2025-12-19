@@ -24,6 +24,7 @@
 
 package ls.ni.networkfilter.bungee;
 
+import ls.ni.networkfilter.bungee.commands.NetworkFilterCommand;
 import ls.ni.networkfilter.bungee.listeners.PostLoginListener;
 import ls.ni.networkfilter.common.NetworkFilterCommon;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -33,6 +34,10 @@ public class NetworkFilterBungeePlugin extends Plugin {
     @Override
     public void onEnable() {
         NetworkFilterCommon.init(this.getLogger(), this.getDataFolder());
+
+        // ---
+
+        this.getProxy().getPluginManager().registerCommand(this, new NetworkFilterCommand());
 
         // ---
 

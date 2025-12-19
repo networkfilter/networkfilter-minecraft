@@ -51,6 +51,10 @@ public class Config {
 
     @Valid
     @NotNull
+    private List<Integer> asnBlacklist;
+
+    @Valid
+    @NotNull
     private ConsequenceSettings consequences;
 
     @Valid

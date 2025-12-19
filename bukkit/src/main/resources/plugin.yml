@@ -8,3 +8,8 @@ author: nidotls
 website: https://github.com/nidotls/${project.parent.name}
 
 main: ${project.groupId}.bukkit.${project.name}Plugin
+
+commands:
+  networkfilter:
+    aliases: [nf]
+    permission: networkfilter.admin
