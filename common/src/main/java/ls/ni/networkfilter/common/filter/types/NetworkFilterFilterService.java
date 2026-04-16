@@ -1,6 +1,6 @@
 package ls.ni.networkfilter.common.filter.types;
 
-import jakarta.validation.constraints.NotBlank;
+import kong.unirest.core.HttpRequestWithBody;
 import kong.unirest.core.HttpResponse;
 import kong.unirest.core.JsonNode;
 import kong.unirest.core.Unirest;
@@ -10,17 +10,18 @@ import ls.ni.networkfilter.common.filter.FilterException;
 import ls.ni.networkfilter.common.filter.FilterResult;
 import ls.ni.networkfilter.common.filter.FilterService;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
 
 public class NetworkFilterFilterService implements FilterService {
 
-    @NotNull
+    @Nullable
     private final String apiKey;
 
-    public NetworkFilterFilterService(@NotNull @NotBlank String apiKey) {
-        this.apiKey = apiKey;
+    public NetworkFilterFilterService(@Nullable String apiKey) {
+        this.apiKey = apiKey != null && !apiKey.isBlank() ? apiKey : null;
     }
 
     @Override
@@ -30,9 +31,14 @@ public class NetworkFilterFilterService implements FilterService {
 
     @Override
     public @NotNull FilterResult check(@NotNull String ip) {
-        HttpResponse<JsonNode> response = Unirest.post("https://nf.ni.ls/api/check")
-                .header("X-API-KEY", this.apiKey)
-                .header("Content-Type", "application/x-www-form-urlencoded")
+        HttpRequestWithBody request = Unirest.post("https://nf.ni.ls/api/check")
+                .header("Content-Type", "application/x-www-form-urlencoded");
+
+        if (this.apiKey != null) {
+            request.header("X-API-KEY", this.apiKey);
+        }
+
+        HttpResponse<JsonNode> response = request
                 .field("ip", ip)
                 .asJson();
 

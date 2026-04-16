@@ -20,7 +20,7 @@ caches:
 services:
   # https://nf.ni.ls
   networkfilter:
-    # Required
+    # Optional, needed if rate-limited
     key: ""
 
   # https://ipapi.is
