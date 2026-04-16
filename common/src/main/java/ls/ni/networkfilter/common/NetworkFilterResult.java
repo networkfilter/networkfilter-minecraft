@@ -1,6 +1,6 @@
 package ls.ni.networkfilter.common;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.jetbrains.annotations.NotNull;
 
 /**

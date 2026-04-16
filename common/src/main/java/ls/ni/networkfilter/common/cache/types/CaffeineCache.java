@@ -3,7 +3,7 @@ package ls.ni.networkfilter.common.cache.types;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import ls.ni.networkfilter.common.cache.Cache;
 import ls.ni.networkfilter.common.filter.FilterResult;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
