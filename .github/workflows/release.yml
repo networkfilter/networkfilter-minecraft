@@ -52,7 +52,7 @@ jobs:
 
       - name: Get Git Changelog
         id: get_changelog
-        uses: thenilsdev/git-log-action@1.0.5
+        uses: thenilsdev/git-log-action@v2.0.3
         if: steps.release.outcome == 'success' && steps.release.conclusion == 'success'
 
       - name: Build with Maven
