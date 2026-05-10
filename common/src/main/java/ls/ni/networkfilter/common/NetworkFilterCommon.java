@@ -21,7 +21,6 @@ import java.io.File;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.text.MessageFormat;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -116,69 +115,21 @@ public class NetworkFilterCommon {
     private @NotNull NetworkFilterResult check(@NotNull String ip) {
         long startTime = System.nanoTime();
 
-        // cache
-        Optional<FilterResult> cached = Optional.ofNullable(this.filterCache.getIfPresent(ip));
-        if (cached.isPresent()) {
-            this.debug("[{0}] Result is cached: {1}", ip, cached.get());
+        FilterResult cached = this.filterCache.getIfPresent(ip);
+        if (cached != null) {
+            this.debug("[{0}] Result is cached: {1}", ip, cached);
 
             return new NetworkFilterResult(
-                    cached.get().block(),
-                    cached.get().asn(),
-                    cached.get().org(),
+                    cached.block(),
+                    cached.asn(),
+                    cached.org(),
                     ip,
                     true,
                     TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime)
             );
         }
 
-        // ignore
-        try {
-            for (String network : this.configManager.getConfig().getIgnore().getNetworks()) {
-                if (!network.contains("/")) {
-                    this.logger.warning(network + " is not in CIDR notation, assuming /32");
-                    network = network + "/32";
-                }
-
-                SubnetUtils subnetUtils = new SubnetUtils(network);
-
-                if (subnetUtils.getInfo().isInRange(ip)) {
-                    FilterResult filterResult = new FilterResult(false, null, null);
-
-                    this.filterCache.put(ip, filterResult);
-
-                    this.debug("[{0}] IP is in ignored range: {1}", ip, network);
-
-                    return new NetworkFilterResult(
-                            false,
-                            -1,
-                            "Ignored Network",
-                            ip,
-                            false,
-                            TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime)
-                    );
-                }
-            }
-        } catch (Throwable t) {
-            this.logger.log(Level.SEVERE, "Error while checking inetAddress for ignored", t);
-        }
-
-        // check
-        FilterResult filterResult;
-        try {
-            filterResult = this.filterService.check(ip);
-        } catch (FilterException e) {
-            this.logger.log(Level.SEVERE, "Could not check ip " + ip + " (status: " + e.getCode() + ", body: " + e.getBody().toString() + ")", e);
-
-            // TODO: make configurable (something like "blockOnFilterServiceError") - should apply on rate limit?
-            filterResult = new FilterResult(false, null, null);
-        } catch (Throwable t) {
-            this.logger.log(Level.SEVERE, "Could not check ip " + ip, t);
-
-            // TODO: make configurable (something like "blockOnUnexpectedError")
-            filterResult = new FilterResult(false, null, null);
-        }
-
-        this.filterCache.put(ip, filterResult);
+        FilterResult filterResult = this.filterCache.get(ip, this::loadFilterResult);
 
         this.debug("[{0}] Requested: {1}", ip, filterResult);
 
@@ -190,6 +141,42 @@ public class NetworkFilterCommon {
                 false,
                 TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime)
         );
+    }
+
+    private @NotNull FilterResult loadFilterResult(@NotNull String ip) {
+
+        try {
+            for (String network : this.configManager.getConfig().getIgnore().getNetworks()) {
+                if (!network.contains("/")) {
+                    this.logger.warning(network + " is not in CIDR notation, assuming /32");
+                    network = network + "/32";
+                }
+
+                SubnetUtils subnetUtils = new SubnetUtils(network);
+
+                if (subnetUtils.getInfo().isInRange(ip)) {
+                    this.debug("[{0}] IP is in ignored range: {1}", ip, network);
+
+                    return new FilterResult(false, -1, "Ignored Network");
+                }
+            }
+        } catch (Throwable t) {
+            this.logger.log(Level.SEVERE, "Error while checking inetAddress for ignored", t);
+        }
+
+        try {
+            return this.filterService.check(ip);
+        } catch (FilterException e) {
+            this.logger.log(Level.SEVERE, "Could not check ip " + ip + " (status: " + e.getCode() + ", body: " + e.getBody().toString() + ")", e);
+
+            // TODO: make configurable (something like "blockOnFilterServiceError") - should apply on rate limit?
+            return new FilterResult(false, null, null);
+        } catch (Throwable t) {
+            this.logger.log(Level.SEVERE, "Could not check ip " + ip, t);
+
+            // TODO: make configurable (something like "blockOnUnexpectedError")
+            return new FilterResult(false, null, null);
+        }
     }
 
     public void sendNotify(NetworkFilterResult result, String name, UUID uuid) {

@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ls.ni.networkfilter.common.config.cache.CacheSettings;
 import ls.ni.networkfilter.common.config.cache.CacheType;
+import ls.ni.networkfilter.common.config.cache.types.ApiCacheSettings;
 import ls.ni.networkfilter.common.config.consequence.ConsequenceSettings;
 import ls.ni.networkfilter.common.config.ignore.IgnoreSettings;
 import ls.ni.networkfilter.common.config.notify.NotifySettings;
@@ -36,6 +37,9 @@ public class Config {
     @Valid
     @NotNull
     private CacheSettings caches;
+
+    @Valid
+    private ApiCacheSettings apiCache;
 
     @Valid
     @NotNull
