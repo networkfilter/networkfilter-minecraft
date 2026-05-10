@@ -17,6 +17,13 @@ caches:
     uri: "redis://user:password@localhost:6379"
     cacheTimeMinutes: 15
 
+# Local in-memory cache for API/filter results.
+# If enabled, this is checked before every API request.
+apiCache:
+  enabled: true
+  maximumSize: 1000
+  cacheTimeMinutes: 60
+
 services:
   # https://nf.ni.ls
   networkfilter:
