@@ -21,6 +21,7 @@ import java.io.File;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.text.MessageFormat;
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -201,6 +202,7 @@ public class NetworkFilterCommon {
                         result, name, uuid);
 
                 WebhookEmbed embed = new WebhookEmbedBuilder()
+                        .setTimestamp(Instant.now())
                         .setColor(0xFF0000)
                         .setDescription(message)
                         .setThumbnailUrl("https://mc-api.io/render/" + uuid)
