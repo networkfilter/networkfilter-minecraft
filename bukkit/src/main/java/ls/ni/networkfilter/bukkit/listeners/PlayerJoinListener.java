@@ -10,7 +10,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.net.InetSocketAddress;
-import java.util.Optional;
 
 
 public class PlayerJoinListener implements Listener {
@@ -39,6 +38,11 @@ public class PlayerJoinListener implements Listener {
             }
 
             this.plugin.getServer().getScheduler().runTask(this.plugin, () -> {
+                // UUID alone is not enough: a reconnect creates a different player session.
+                if (!player.isOnline() || this.plugin.getServer().getPlayer(player.getUniqueId()) != player) {
+                    return;
+                }
+
                 if (NetworkFilterCommon.getConfig().getConsequences().getKick().getEnabled()) {
                     String rawMessage = NetworkFilterCommon.getConfig().getConsequences().getKick().getMessage();
                     String message = PlaceholderUtil.replace(rawMessage, result, player.getName(), player.getUniqueId());

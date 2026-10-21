@@ -10,7 +10,6 @@ import ls.ni.networkfilter.velocity.NetworkFilterVelocityPlugin;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
 import java.net.InetSocketAddress;
-import java.util.Optional;
 
 public class PostLoginListener {
 
@@ -34,6 +33,11 @@ public class PostLoginListener {
             NetworkFilterResult result = NetworkFilterCommon.getInstance().check(address);
 
             if (!result.blocked()) {
+                return;
+            }
+
+            // Discard results belonging to a disconnected or replaced connection.
+            if (!player.isActive() || this.plugin.getServer().getPlayer(player.getUniqueId()).orElse(null) != player) {
                 return;
             }
 

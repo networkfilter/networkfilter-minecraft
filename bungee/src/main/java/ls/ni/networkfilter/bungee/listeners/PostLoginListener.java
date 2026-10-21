@@ -64,6 +64,11 @@ public class PostLoginListener implements Listener {
                     return;
                 }
 
+                // Discard results belonging to a disconnected or replaced connection.
+                if (!player.isConnected() || this.plugin.getProxy().getPlayer(player.getUniqueId()) != player) {
+                    return;
+                }
+
                 if (NetworkFilterCommon.getConfig().getConsequences().getKick().getEnabled()) {
                     String rawMessage = NetworkFilterCommon.getConfig().getConsequences().getKick().getMessage();
                     String message = PlaceholderUtil.replace(rawMessage, result, player.getName(), player.getUniqueId());
