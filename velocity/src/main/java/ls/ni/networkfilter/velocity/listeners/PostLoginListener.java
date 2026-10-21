@@ -7,7 +7,7 @@ import ls.ni.networkfilter.common.NetworkFilterCommon;
 import ls.ni.networkfilter.common.NetworkFilterResult;
 import ls.ni.networkfilter.common.util.PlaceholderUtil;
 import ls.ni.networkfilter.velocity.NetworkFilterVelocityPlugin;
-import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 import java.net.InetSocketAddress;
 
@@ -45,7 +45,7 @@ public class PostLoginListener {
                 String rawMessage = NetworkFilterCommon.getConfig().getConsequences().getKick().getMessage();
                 String message = PlaceholderUtil.replace(rawMessage, result, player.getUsername(), player.getUniqueId());
 
-                player.disconnect(MiniMessage.miniMessage().deserialize(message));
+                player.disconnect(LegacyComponentSerializer.legacySection().deserialize(message));
             }
 
             for (String rawCommand : NetworkFilterCommon.getConfig().getConsequences().getCommands()) {
